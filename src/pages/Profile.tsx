@@ -96,7 +96,7 @@ const Profile = () => {
           phone: profileData.phone,
           is_advertiser: profileData.is_advertiser,
           is_vehicle_owner: profileData.is_vehicle_owner,
-          updated_at: new Date()
+          updated_at: new Date().toISOString() // Fix: Convert Date object to ISO string
         })
         .eq('id', user.id);
       
