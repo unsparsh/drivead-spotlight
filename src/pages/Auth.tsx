@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import Footer from '@/components/Footer';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   
   const [email, setEmail] = useState('');
@@ -46,22 +48,38 @@ const Auth = () => {
     };
   }, [navigate]);
   
-  // Handle auth callback
+  // Handle auth callback and errors
   useEffect(() => {
-    // Check if we are on the callback URL
-    if (window.location.hash || window.location.search.includes("error")) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    // Process error messages from redirect parameters
+    const processErrorParams = () => {
+      // Check URL search parameters first (hash or query)
       const searchParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
       
-      // Check for error
-      const errorDescription = searchParams.get("error_description") || hashParams.get("error_description");
+      // Check both searchParams and hashParams for errors
+      const errorFromSearch = searchParams.get("error");
+      const errorDescFromSearch = searchParams.get("error_description");
+      const errorFromHash = hashParams.get("error");
+      const errorDescFromHash = hashParams.get("error_description");
       
-      if (errorDescription) {
-        setError(`Authentication error: ${errorDescription}`);
-        console.error("Auth error:", errorDescription);
+      const errorMessage = errorDescFromSearch || errorDescFromHash || errorFromSearch || errorFromHash;
+      
+      if (errorMessage) {
+        setError(`Authentication error: ${errorMessage}`);
+        console.error("Auth error:", errorMessage);
+        
+        // Show a toast for better visibility
+        toast({
+          title: "Authentication Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
       }
-    }
-  }, []);
+    };
+    
+    // Process callback parameters
+    processErrorParams();
+  }, [location, toast]);
   
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,12 +143,18 @@ const Auth = () => {
       setLoading(true);
       setError(null);
       
-      console.log("Starting Google sign in, redirect URL:", `${window.location.origin}/auth/callback`);
+      // Get the current URL origin for callback
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      console.log("Starting Google sign in, redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       
@@ -139,8 +163,23 @@ const Auth = () => {
         throw error;
       }
       
-      // Redirect happens automatically through the OAuth flow
+      // Show detailed log for debugging
       console.log("Google sign in initiated, URL:", data?.url);
+      
+      // Redirect happens automatically through the OAuth flow
+      
+      // If we've reached this point without a redirect, show a toast
+      setTimeout(() => {
+        if (!data?.url) {
+          toast({
+            title: "Google Sign In Failed",
+            description: "Could not initiate Google sign in. Please try again.",
+            variant: "destructive",
+          });
+          setLoading(false);
+        }
+      }, 3000);
+      
     } catch (error: any) {
       setError(error.message || 'Error signing in with Google');
       console.error('Error during Google sign in:', error);
@@ -151,7 +190,6 @@ const Auth = () => {
         description: `Error: ${error.message || "Unknown error"}. Please check console for details.`,
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -171,6 +209,14 @@ const Auth = () => {
                 Sign in or create an account to continue
               </CardDescription>
             </CardHeader>
+            
+            {/* Show error at the top level if it's from a redirect */}
+            {error && location.search.includes('error') && (
+              <Alert variant="destructive" className="mx-6 mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
@@ -210,7 +256,7 @@ const Auth = () => {
                       />
                     </div>
                     
-                    {error && (
+                    {error && !location.search.includes('error') && (
                       <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>{error}</AlertDescription>
