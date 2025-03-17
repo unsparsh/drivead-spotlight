@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,6 +45,23 @@ const Auth = () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
+  
+  // Handle auth callback
+  useEffect(() => {
+    // Check if we are on the callback URL
+    if (window.location.hash || window.location.search.includes("error")) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const searchParams = new URLSearchParams(window.location.search);
+      
+      // Check for error
+      const errorDescription = searchParams.get("error_description") || hashParams.get("error_description");
+      
+      if (errorDescription) {
+        setError(`Authentication error: ${errorDescription}`);
+        console.error("Auth error:", errorDescription);
+      }
+    }
+  }, []);
   
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,8 +123,10 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      // Fix: Update the redirectTo URL to match your application's URL
-      // Important: Make sure to set this to your actual deployment URL in production
+      setError(null);
+      
+      console.log("Starting Google sign in, redirect URL:", `${window.location.origin}/auth/callback`);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -116,12 +134,24 @@ const Auth = () => {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Google sign in error:", error);
+        throw error;
+      }
       
-      // Redirect happens automatically
+      // Redirect happens automatically through the OAuth flow
+      console.log("Google sign in initiated, URL:", data?.url);
     } catch (error: any) {
       setError(error.message || 'Error signing in with Google');
       console.error('Error during Google sign in:', error);
+      
+      // Show detailed toast for better debugging
+      toast({
+        title: "Google Sign In Failed",
+        description: `Error: ${error.message || "Unknown error"}. Please check console for details.`,
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
     }
   };
