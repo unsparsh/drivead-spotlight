@@ -107,10 +107,12 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
+      // Fix: Update the redirectTo URL to match your application's URL
+      // Important: Make sure to set this to your actual deployment URL in production
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: `${window.location.origin}/auth/callback`,
         }
       });
       
