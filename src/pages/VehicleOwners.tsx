@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+
+import { useState, useRef, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
@@ -7,45 +8,68 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Car, Truck, Camera, CheckCircle, AlertCircle, IndianRupee } from 'lucide-react';
+import { Car, Truck, Camera, CheckCircle, AlertCircle, IndianRupee, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
-interface Banner {
+interface Campaign {
   id: string;
   name: string;
   company: string;
   count: number;
-  dailyRate: number;
+  daily_rate: number;
 }
-
-const banners: Banner[] = [
-  { id: '1', name: 'TechStore Launch', company: 'TechStore India', count: 5, dailyRate: 70 },
-  { id: '2', name: 'Summer Fashion Sale', company: 'StyleNow', count: 3, dailyRate: 100 },
-  { id: '3', name: 'Food Delivery App', company: 'FreshEats', count: 8, dailyRate: 70 },
-  { id: '4', name: 'New Smartphone', company: 'MobiTech', count: 2, dailyRate: 100 },
-  { id: '5', name: 'Banking App', company: 'SecureBank', count: 4, dailyRate: 70 },
-  { id: '6', name: 'Streaming Service', company: 'StreamX', count: 6, dailyRate: 100 },
-];
 
 const VehicleOwners = () => {
   const { toast } = useToast();
   const [vehicleType, setVehicleType] = useState('auto');
   const [selectedBanner, setSelectedBanner] = useState<string | null>(null);
-  const [availableBanners, setAvailableBanners] = useState<Banner[]>(banners);
+  const [availableBanners, setAvailableBanners] = useState<Campaign[]>([]);
   const [showCaptureSection, setShowCaptureSection] = useState(false);
   const [photoStatus, setPhotoStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [photoMessage, setPhotoMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  // Fetch campaigns from Supabase
+  const { data: campaigns, isLoading, error } = useQuery({
+    queryKey: ['campaigns'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*');
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      return data as Campaign[];
+    }
+  });
+  
+  // Filter campaigns based on vehicle type
+  useEffect(() => {
+    if (campaigns) {
+      const filteredBanners = campaigns.filter(campaign => 
+        (vehicleType === 'auto' && campaign.daily_rate === 70) || 
+        (vehicleType === 'car' && campaign.daily_rate === 100)
+      );
+      setAvailableBanners(filteredBanners);
+    }
+  }, [campaigns, vehicleType]);
+  
   const handleVehicleTypeChange = (value: string) => {
     setVehicleType(value);
     setSelectedBanner(null);
-    const filteredBanners = banners.filter(banner => 
-      (value === 'auto' && banner.dailyRate === 70) || 
-      (value === 'car' && banner.dailyRate === 100)
-    );
-    setAvailableBanners(filteredBanners);
+    
+    if (campaigns) {
+      const filteredBanners = campaigns.filter(campaign => 
+        (value === 'auto' && campaign.daily_rate === 70) || 
+        (value === 'car' && campaign.daily_rate === 100)
+      );
+      setAvailableBanners(filteredBanners);
+    }
   };
   
   const handleBannerSelect = (bannerId: string) => {
@@ -68,6 +92,7 @@ const VehicleOwners = () => {
       return;
     }
     
+    // Update campaign count locally (in a real app, this should update the database)
     setAvailableBanners(prev => 
       prev.map(banner => 
         banner.id === selectedBanner 
@@ -82,6 +107,12 @@ const VehicleOwners = () => {
     });
     
     setShowCaptureSection(true);
+  };
+  
+  const handlePhotoCapture = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
   
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,9 +146,14 @@ const VehicleOwners = () => {
     }
   };
   
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  // Error handling for campaigns loading
+  if (error) {
+    toast({
+      title: "Error loading campaigns",
+      description: "There was an error loading available campaigns. Please try again later.",
+      variant: "destructive",
+    });
+  }
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -218,7 +254,12 @@ const VehicleOwners = () => {
                     <div className="sticky top-8">
                       <h3 className="text-xl font-semibold mb-6">Available Banners</h3>
                       
-                      {availableBanners.length > 0 ? (
+                      {isLoading ? (
+                        <div className="flex items-center justify-center p-12">
+                          <Loader2 className="w-8 h-8 animate-spin text-driveAd-purple" />
+                          <span className="ml-3 text-driveAd-purple">Loading campaigns...</span>
+                        </div>
+                      ) : availableBanners.length > 0 ? (
                         <div className="grid grid-cols-1 gap-4">
                           {availableBanners.map(banner => (
                             <Card 
@@ -235,7 +276,7 @@ const VehicleOwners = () => {
                                     <p className="text-gray-500 mb-3">{banner.company}</p>
                                     <div className="flex items-center text-sm text-driveAd-purple">
                                       <IndianRupee className="w-4 h-4 mr-1" />
-                                      <span>{banner.dailyRate} per day</span>
+                                      <span>{banner.daily_rate} per day</span>
                                     </div>
                                   </div>
                                   <div className="bg-amber-100 text-amber-800 text-xs py-1 px-2 rounded-full">
@@ -309,7 +350,7 @@ const VehicleOwners = () => {
                         
                         <div className="flex justify-center">
                           <div 
-                            onClick={triggerFileInput}
+                            onClick={handlePhotoCapture}
                             className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:bg-gray-50 transition-colors w-full max-w-md"
                           >
                             <Camera className="w-12 h-12 text-gray-400 mb-4" />
