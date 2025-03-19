@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Car, Truck, Camera, Upload, IndianRupee, CheckCircle, AlertCircle } from 'lucide-react';
+import { Car, Truck, Camera, CheckCircle, AlertCircle, IndianRupee } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 
@@ -42,7 +41,6 @@ const VehicleOwners = () => {
   const handleVehicleTypeChange = (value: string) => {
     setVehicleType(value);
     setSelectedBanner(null);
-    // Filter banners based on vehicle type and pricing
     const filteredBanners = banners.filter(banner => 
       (value === 'auto' && banner.dailyRate === 70) || 
       (value === 'car' && banner.dailyRate === 100)
@@ -70,13 +68,12 @@ const VehicleOwners = () => {
       return;
     }
     
-    // Decrease count for selected banner
     setAvailableBanners(prev => 
       prev.map(banner => 
         banner.id === selectedBanner 
           ? { ...banner, count: banner.count - 1 } 
           : banner
-      ).filter(banner => banner.count > 0) // Remove banners with zero count
+      ).filter(banner => banner.count > 0)
     );
     
     toast({
@@ -93,15 +90,12 @@ const VehicleOwners = () => {
       return;
     }
     
-    // Simple validation to check if photo was taken today
-    // In a real app, would use EXIF data to check timestamp
     const now = new Date();
     const fileDate = new Date(file.lastModified);
     
     if (fileDate.getDate() === now.getDate() && 
         fileDate.getMonth() === now.getMonth() && 
         fileDate.getFullYear() === now.getFullYear()) {
-      // Photo is from today
       setPhotoStatus('success');
       setPhotoMessage('Photo verification successful! Your daily payment will be processed.');
       
@@ -110,7 +104,6 @@ const VehicleOwners = () => {
         description: "Your daily payment will be processed shortly.",
       });
     } else {
-      // Photo is not from today
       setPhotoStatus('error');
       setPhotoMessage('Photo verification failed. Please take a new photo of your vehicle with the banner.');
       
@@ -131,7 +124,6 @@ const VehicleOwners = () => {
       <Navbar />
       
       <main className="flex-grow">
-        {/* Hero Section */}
         <section className="py-20 gradient-bg text-white">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
@@ -143,7 +135,6 @@ const VehicleOwners = () => {
           </div>
         </section>
         
-        {/* Vehicle Owner Portal */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
@@ -313,16 +304,16 @@ const VehicleOwners = () => {
                       <div className="border-t border-b border-gray-200 py-6">
                         <h3 className="text-lg font-semibold mb-4">Daily Photo Verification</h3>
                         <p className="text-gray-600 mb-6">
-                          To receive your daily payment, please upload a photo of your vehicle with the banner installed. The photo must be taken today.
+                          To receive your daily payment, please take a photo of your vehicle with the banner installed. The photo must be taken today.
                         </p>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex justify-center">
                           <div 
                             onClick={triggerFileInput}
-                            className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                            className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:bg-gray-50 transition-colors w-full max-w-md"
                           >
                             <Camera className="w-12 h-12 text-gray-400 mb-4" />
-                            <p className="text-gray-500 text-center">Take a photo</p>
+                            <p className="text-gray-500 text-center">Take a photo of your vehicle with banner</p>
                             <input 
                               type="file" 
                               accept="image/*" 
@@ -331,14 +322,6 @@ const VehicleOwners = () => {
                               onChange={handlePhotoUpload}
                               className="hidden"
                             />
-                          </div>
-                          
-                          <div 
-                            onClick={triggerFileInput}
-                            className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:bg-gray-50 transition-colors"
-                          >
-                            <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                            <p className="text-gray-500 text-center">Upload a photo</p>
                           </div>
                         </div>
                         
@@ -374,7 +357,6 @@ const VehicleOwners = () => {
           </div>
         </section>
         
-        {/* Benefits Section */}
         <section className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
