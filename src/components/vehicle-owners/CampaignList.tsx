@@ -1,6 +1,6 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, AlertCircle, IndianRupee, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import BannerCard from './BannerCard';
 
 interface Campaign {
   id: string;
@@ -47,35 +47,16 @@ const CampaignList = ({
   return (
     <div className="grid grid-cols-1 gap-4">
       {availableBanners.map(banner => (
-        <Card 
-          key={banner.id} 
-          className={`cursor-pointer transition-colors ${
-            selectedBanner === banner.id ? 'border-driveAd-purple bg-driveAd-purple/5' : ''
-          }`}
-          onClick={() => onBannerSelect(banner.id)}
-        >
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-semibold text-lg">{banner.name}</h4>
-                <p className="text-gray-500 mb-3">{banner.company}</p>
-                <div className="flex items-center text-sm text-driveAd-purple">
-                  <IndianRupee className="w-4 h-4 mr-1" />
-                  <span>{banner.daily_rate} per day</span>
-                </div>
-              </div>
-              <div className="bg-amber-100 text-amber-800 text-xs py-1 px-2 rounded-full">
-                {banner.count} remaining
-              </div>
-            </div>
-            {selectedBanner === banner.id && (
-              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center text-driveAd-purple">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                <span>Selected</span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <BannerCard
+          key={banner.id}
+          id={banner.id}
+          name={banner.name}
+          company={banner.company}
+          count={banner.count}
+          dailyRate={banner.daily_rate}
+          isSelected={selectedBanner === banner.id}
+          onSelect={onBannerSelect}
+        />
       ))}
     </div>
   );
