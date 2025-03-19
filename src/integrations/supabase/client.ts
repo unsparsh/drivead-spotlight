@@ -30,8 +30,6 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      // Use the current app URL dynamically for redirects
-      redirectTo: `${getAppUrl()}/auth/callback`,
     },
   }
 );
