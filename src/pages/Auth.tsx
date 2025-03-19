@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -77,8 +76,24 @@ const Auth = () => {
       }
     };
     
+    // Also capture success messages for email confirmations
+    const processSuccessParams = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      
+      // Check for email confirmation success
+      if (searchParams.has("access_token") || searchParams.has("refresh_token")) {
+        console.log("Email confirmation successful");
+        
+        toast({
+          title: "Success!",
+          description: "Your email has been confirmed. You're now signed in.",
+        });
+      }
+    };
+    
     // Process callback parameters
     processErrorParams();
+    processSuccessParams();
   }, [location, toast]);
   
   const handleEmailSignUp = async (e: React.FormEvent) => {
@@ -92,9 +107,16 @@ const Auth = () => {
     
     try {
       setLoading(true);
+      
+      // Get the current app URL for redirects
+      const appUrl = window.location.origin;
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${appUrl}/auth/callback`,
+        }
       });
       
       if (error) throw error;
@@ -143,8 +165,10 @@ const Auth = () => {
       setLoading(true);
       setError(null);
       
-      // Get the current URL origin for callback
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+      // Get the current app URL for redirects
+      const appUrl = window.location.origin;
+      const redirectUrl = `${appUrl}/auth/callback`;
+      
       console.log("Starting Google sign in, redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -242,7 +266,7 @@ const Auth = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="password">Password</Label>
-                        <Link to="/forgot-password" className="text-sm text-driveAd-purple hover:underline">
+                        <Link to="/forgot-password" className="text-driveAd-purple hover:underline">
                           Forgot password?
                         </Link>
                       </div>
