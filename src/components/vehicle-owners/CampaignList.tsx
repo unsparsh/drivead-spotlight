@@ -1,5 +1,5 @@
 
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Clock } from 'lucide-react';
 import BannerCard from './BannerCard';
 
 interface Campaign {
@@ -34,11 +34,20 @@ const CampaignList = ({
 
   if (availableBanners.length === 0) {
     return (
-      <div className="bg-gray-100 rounded-lg p-8 text-center">
-        <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium mb-2">No Banners Available</h3>
+      <div className="bg-gray-50 rounded-lg p-8 text-center">
+        <Clock className="w-16 h-16 text-driveAd-purple mx-auto mb-4" />
+        
+        <div className="bg-white rounded-lg shadow-md p-4 mb-6 max-w-xs mx-auto overflow-hidden">
+          <img 
+            src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=500&q=80" 
+            alt="Person holding lightbulb" 
+            className="w-full h-40 object-cover rounded-md"
+          />
+        </div>
+        
+        <h3 className="text-lg font-medium mb-2">No Available Banners now, wait for a while...</h3>
         <p className="text-gray-500">
-          There are currently no banners available for your vehicle type. Please check back later.
+          We're currently updating our banner inventory. Please check back soon for new advertising opportunities.
         </p>
       </div>
     );
