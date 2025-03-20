@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <div className="relative overflow-hidden bg-white">
+    <div className="relative overflow-hidden bg-white dark:bg-background">
       {/* Purple gradient shapes */}
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-driveAd-purple-light opacity-10 rounded-full blur-3xl"></div>
       <div className="absolute top-1/2 -left-48 w-96 h-96 bg-driveAd-purple-light opacity-10 rounded-full blur-3xl"></div>
@@ -17,7 +17,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight dark:text-white"
           >
             Turn Vehicles Into 
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-driveAd-purple-light to-driveAd-purple-dark"> Mobile Billboards</span>
@@ -27,7 +27,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl text-gray-600"
+            className="text-xl text-gray-600 dark:text-gray-300"
           >
             Connect your brand with thousands of vehicles across the city. Our platform makes outdoor advertising accessible, affordable, and measurable.
           </motion.p>
@@ -45,7 +45,7 @@ const HeroSection = () => {
               </Button>
             </Link>
             <Link to="/vehicle-owners">
-              <Button size="lg" variant="outline" className="border-driveAd-purple text-driveAd-purple hover:bg-driveAd-purple-light/10">
+              <Button size="lg" variant="outline" className="border-driveAd-purple text-driveAd-purple hover:bg-driveAd-purple-light/10 dark:text-white dark:border-white dark:hover:bg-driveAd-purple-light/20">
                 For Vehicle Owners
               </Button>
             </Link>
@@ -57,14 +57,14 @@ const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="relative"
+            className="relative sticky top-20"
           >
-            <div className="aspect-video bg-driveAd-purple/10 rounded-lg overflow-hidden relative">
+            <div className="aspect-video bg-driveAd-purple/10 dark:bg-driveAd-purple/20 rounded-lg overflow-hidden relative">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="animate-float">
-                  <Car size={80} className="text-driveAd-purple mx-auto" />
-                  <div className="mt-4 bg-white p-4 rounded-lg shadow-lg">
-                    <p className="text-center font-medium">Your Ad Here</p>
+                  <Car size={80} className="text-driveAd-purple dark:text-driveAd-purple-light mx-auto" />
+                  <div className="mt-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg">
+                    <p className="text-center font-medium dark:text-white">Your Ad Here</p>
                   </div>
                 </div>
               </div>

@@ -90,7 +90,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-200;
   }
 }
 
@@ -105,4 +105,9 @@
 .card-hover:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(107, 70, 193, 0.2);
+}
+
+/* Dark mode card hover effect */
+.dark .card-hover:hover {
+  box-shadow: 0 10px 25px rgba(155, 135, 245, 0.3);
 }

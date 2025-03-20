@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Advertisers from "./pages/Advertisers";
@@ -18,9 +19,29 @@ import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
+// This component handles initializing the theme
+const ThemeInitializer = () => {
+  useEffect(() => {
+    // Check if user has a theme preference in localStorage
+    const storedTheme = localStorage.getItem('theme');
+    
+    // Check if user has a system preference
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Set the theme based on preference or system
+    const initialTheme = storedTheme || (systemPrefersDark ? 'dark' : 'light');
+    
+    // Apply the theme to the document
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+  }, []);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <ThemeInitializer />
       <TooltipProvider>
         <Toaster />
         <Sonner />
