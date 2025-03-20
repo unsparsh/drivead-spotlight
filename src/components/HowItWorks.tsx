@@ -26,21 +26,21 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">How DriveAd Works</h2>
-          <p className="text-xl text-gray-600">Our simple process makes vehicle advertising easy for everyone.</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 dark:text-white">How DriveAd Works</h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300">Our simple process makes vehicle advertising easy for everyone.</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="bg-white p-8 rounded-lg shadow-sm card-hover">
-              <div className="bg-driveAd-purple/10 w-16 h-16 rounded-full flex items-center justify-center mb-6">
+            <div key={index} className="process-card">
+              <div className="bg-driveAd-purple/10 dark:bg-driveAd-purple/20 w-16 h-16 rounded-full flex items-center justify-center mb-6">
                 {step.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-              <p className="text-gray-600">{step.description}</p>
+              <h3 className="text-xl font-semibold mb-3 dark:text-white">{step.title}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
             </div>
           ))}
         </div>
