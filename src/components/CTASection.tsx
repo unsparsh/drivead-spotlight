@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const CTASection = () => {
   return (
-    <section className="py-20">
+    <section className="py-20 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="bg-driveAd-purple rounded-2xl overflow-hidden shadow-xl relative">
           <div className="absolute inset-0 bg-gradient-to-r from-driveAd-purple to-driveAd-purple-dark opacity-95"></div>
@@ -20,7 +20,7 @@ const CTASection = () => {
               
               <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <Link to="/advertiser-registration">
-                  <Button size="lg" className="bg-white text-driveAd-purple hover:bg-gray-100">
+                  <Button size="lg" className="bg-white text-driveAd-purple hover:bg-gray-100 dark:bg-gray-100 dark:hover:bg-white">
                     Register as Advertiser
                   </Button>
                 </Link>

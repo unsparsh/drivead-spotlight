@@ -43,7 +43,7 @@ const Testimonials = () => {
         </div>
         
         <div className="relative max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 md:p-12">
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center">
                 <div className="w-16 h-16 overflow-hidden rounded-full mr-4">
@@ -54,8 +54,8 @@ const Testimonials = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-xl">{testimonials[currentIndex].name}</h3>
-                  <p className="text-gray-600">{testimonials[currentIndex].role}</p>
+                  <h3 className="font-semibold text-xl dark:text-white">{testimonials[currentIndex].name}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{testimonials[currentIndex].role}</p>
                 </div>
               </div>
               <div className="flex">
@@ -65,20 +65,20 @@ const Testimonials = () => {
               </div>
             </div>
             
-            <blockquote className="text-xl italic text-gray-700 mb-8">
+            <blockquote className="text-xl italic text-gray-700 dark:text-gray-200 mb-8">
               "{testimonials[currentIndex].quote}"
             </blockquote>
             
             <div className="flex justify-center space-x-4">
               <button 
                 onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-driveAd-purple hover:text-white transition-colors"
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-driveAd-purple hover:text-white transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button 
                 onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-driveAd-purple hover:text-white transition-colors"
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-driveAd-purple hover:text-white transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
