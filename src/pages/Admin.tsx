@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { CampaignRequest, Campaign } from '@/types/Campaign';
 import {
   Table,
   TableBody,
@@ -45,30 +45,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CheckCircle, XCircle, AlertTriangle, Clock, IndianRupee, Edit } from 'lucide-react';
 
-interface CampaignRequest {
-  id: string;
-  company_name: string;
-  email: string;
-  phone: string;
-  vehicle_type: string;
-  duration: number;
-  banner_details: string;
-  created_at: string;
-  status: string;
-  admin_notes: string | null;
-  total_amount: number;
-}
-
-interface Campaign {
-  id: string;
-  name: string;
-  company: string;
-  count: number;
-  daily_rate: number;
-  is_verified: boolean;
-  campaign_details: string | null;
-}
-
 const AdminPage = () => {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -92,7 +68,6 @@ const AdminPage = () => {
     adminNotes: '',
   });
   
-  // Check if user is admin
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!isAuthenticated) {
@@ -135,7 +110,6 @@ const AdminPage = () => {
     checkAdminStatus();
   }, [isAuthenticated, navigate, toast, user]);
   
-  // Fetch campaign requests
   useEffect(() => {
     const fetchCampaignRequests = async () => {
       if (!isAdmin) return;
@@ -165,7 +139,6 @@ const AdminPage = () => {
     fetchCampaignRequests();
   }, [isAdmin, toast]);
   
-  // Fetch campaigns
   useEffect(() => {
     const fetchCampaigns = async () => {
       if (!isAdmin) return;
@@ -230,7 +203,6 @@ const AdminPage = () => {
     if (!selectedRequest) return;
     
     try {
-      // Create a new campaign
       const { error: campaignError } = await supabase
         .from('campaigns')
         .insert({
@@ -245,7 +217,6 @@ const AdminPage = () => {
       
       if (campaignError) throw campaignError;
       
-      // Update the request status
       const { error: updateError } = await supabase
         .from('campaign_requests')
         .update({
@@ -261,7 +232,6 @@ const AdminPage = () => {
         description: "The campaign has been approved and is now live.",
       });
       
-      // Refresh data
       setCampaignRequests(prev => 
         prev.map(req => 
           req.id === selectedRequest.id 
@@ -270,7 +240,6 @@ const AdminPage = () => {
         )
       );
       
-      // Fetch updated campaigns
       const { data: updatedCampaigns } = await supabase
         .from('campaigns')
         .select('*')
@@ -308,7 +277,6 @@ const AdminPage = () => {
         description: "The campaign request has been rejected.",
       });
       
-      // Update local state
       setCampaignRequests(prev => 
         prev.map(req => 
           req.id === selectedRequest.id 
@@ -346,7 +314,6 @@ const AdminPage = () => {
           : "The campaign is now hidden from vehicle owners.",
       });
       
-      // Update local state
       setCampaigns(prev => 
         prev.map(c => 
           c.id === campaign.id 
@@ -599,7 +566,6 @@ const AdminPage = () => {
       
       <Footer />
       
-      {/* Approval Dialog */}
       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -661,7 +627,6 @@ const AdminPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Rejection Dialog */}
       <AlertDialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
