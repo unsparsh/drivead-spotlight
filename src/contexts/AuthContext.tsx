@@ -19,13 +19,22 @@ const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get the current session
+    // Set up auth state listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user || null);
+        setLoading(false);
+      }
+    );
+    
+    // Then check for existing session
     const getSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
@@ -42,15 +51,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     getSession();
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user || null);
-        setLoading(false);
-      }
-    );
     
     return () => {
       subscription.unsubscribe();
