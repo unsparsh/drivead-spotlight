@@ -152,7 +152,14 @@ const AdminPage = () => {
         
         if (error) throw error;
         
-        setCampaigns(data || []);
+        const transformedData = data?.map(item => ({
+          ...item,
+          vehicle_type: '',  // Default empty string for required fields
+          description: item.campaign_details || '',
+          available_count: item.count
+        })) as Campaign[];
+        
+        setCampaigns(transformedData || []);
       } catch (error: any) {
         console.error('Error fetching campaigns:', error);
         toast({
@@ -245,7 +252,14 @@ const AdminPage = () => {
         .select('*')
         .order('created_at', { ascending: false });
       
-      setCampaigns(updatedCampaigns || []);
+      const transformedData = updatedCampaigns?.map(item => ({
+        ...item,
+        vehicle_type: '',  // Default empty string for required fields
+        description: item.campaign_details || '',
+        available_count: item.count
+      })) as Campaign[];
+      
+      setCampaigns(transformedData || []);
       
       setReviewDialogOpen(false);
     } catch (error: any) {

@@ -18,12 +18,14 @@ export interface Campaign {
   id: string;
   name: string;
   company: string;
-  vehicle_type: string;
+  vehicle_type?: string;
   daily_rate: number;
-  description: string;
-  available_count: number;
+  description?: string;
+  available_count?: number;
   is_verified: boolean;
   created_at: string;
+  updated_at: string;
   advertiser_id?: string;
   campaign_details?: string;
+  count: number;
 }
