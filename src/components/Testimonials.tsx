@@ -43,10 +43,10 @@ const Testimonials = () => {
         </div>
         
         <div className="relative max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 md:p-12">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 md:p-12 border dark:border-gray-700">
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center">
-                <div className="w-16 h-16 overflow-hidden rounded-full mr-4">
+                <div className="w-16 h-16 overflow-hidden rounded-full mr-4 border-2 border-gray-200 dark:border-gray-700">
                   <img 
                     src={testimonials[currentIndex].image} 
                     alt={testimonials[currentIndex].name} 

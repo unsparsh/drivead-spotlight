@@ -24,7 +24,7 @@ const BannerCard = ({
     <div 
       className={`cursor-pointer rounded-lg shadow-md p-6 transition-all ${
         isSelected 
-          ? 'border-driveAd-purple bg-driveAd-purple/5 dark:bg-driveAd-purple/20' 
+          ? 'border-driveAd-purple bg-driveAd-purple/5 dark:bg-driveAd-purple/20 dark:border-driveAd-purple-light' 
           : 'banner-card'
       }`}
       onClick={() => onSelect(id)}
@@ -33,7 +33,7 @@ const BannerCard = ({
         <div>
           <h4 className="font-semibold text-lg dark:text-white">{name}</h4>
           <p className="text-gray-500 dark:text-gray-400 mb-3">{company}</p>
-          <div className="flex items-center text-sm text-driveAd-purple">
+          <div className="flex items-center text-sm text-driveAd-purple dark:text-driveAd-purple-light">
             <IndianRupee className="w-4 h-4 mr-1" />
             <span>{dailyRate} per day</span>
           </div>
@@ -43,7 +43,7 @@ const BannerCard = ({
         </div>
       </div>
       {isSelected && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center text-driveAd-purple">
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center text-driveAd-purple dark:text-driveAd-purple-light">
           <CheckCircle className="w-5 h-5 mr-2" />
           <span>Selected</span>
         </div>

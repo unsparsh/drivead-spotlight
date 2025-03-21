@@ -6,8 +6,8 @@ const CTASection = () => {
   return (
     <section className="py-20 dark:bg-gray-900">
       <div className="container mx-auto px-4">
-        <div className="bg-driveAd-purple rounded-2xl overflow-hidden shadow-xl relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-driveAd-purple to-driveAd-purple-dark opacity-95"></div>
+        <div className="bg-driveAd-purple dark:bg-gray-800 rounded-2xl overflow-hidden shadow-xl relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-driveAd-purple to-driveAd-purple-dark opacity-95 dark:from-driveAd-purple-dark dark:to-driveAd-purple dark:opacity-50"></div>
           
           <div className="relative z-10 p-12 md:p-16">
             <div className="max-w-3xl mx-auto text-center">

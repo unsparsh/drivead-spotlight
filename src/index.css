@@ -98,6 +98,10 @@
   background: linear-gradient(135deg, #9b87f5 0%, #6E59A5 100%);
 }
 
+.dark .gradient-bg {
+  background: linear-gradient(135deg, #6E59A5 0%, #4A3A7A 100%);
+}
+
 .card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -195,4 +199,28 @@
 
 .dark .process-card:hover {
   box-shadow: 0 12px 24px rgba(155, 135, 245, 0.15);
+}
+
+/* FAQ Cards */
+.faq-card {
+  @apply bg-white border border-gray-200 rounded-lg shadow-sm p-6 dark:bg-gray-800 dark:border-gray-700;
+}
+
+/* Common cards across different pages */
+.content-card {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden transition-all duration-200;
+}
+
+.content-card:hover {
+  @apply shadow-md dark:shadow-gray-900/30;
+}
+
+/* Vehicle owners page cards */
+.vehicle-card {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 transition-all duration-200;
+}
+
+/* For advertisers page */
+.benefit-card {
+  @apply bg-white dark:bg-gray-800 border-l-4 border-driveAd-purple dark:border-driveAd-purple-light p-6 rounded-lg shadow-sm dark:shadow-gray-900/30;
 }
