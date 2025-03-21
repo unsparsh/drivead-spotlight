@@ -1,7 +1,5 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { CampaignRequest, Campaign } from '@/types/Campaign';
+import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AdminAuth from '@/components/admin/AdminAuth';
@@ -13,66 +11,21 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useCampaignRequests, useActiveCampaigns } from '@/hooks/useAdminCampaigns';
 
 const AdminPage = () => {
-  const [requestsLoading, setRequestsLoading] = useState(true);
-  const [campaignsLoading, setCampaignsLoading] = useState(true);
+  // Use React Query hooks for data fetching
+  const { 
+    data: campaignRequests = [], 
+    isLoading: requestsLoading,
+    refetch: refetchRequests
+  } = useCampaignRequests();
   
-  const [campaignRequests, setCampaignRequests] = useState<CampaignRequest[]>([]);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  
-  // Fetch campaign requests
-  useEffect(() => {
-    const fetchCampaignRequests = async () => {
-      try {
-        setRequestsLoading(true);
-        const { data, error } = await supabase
-          .from('campaign_requests')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (error) throw error;
-        
-        setCampaignRequests(data || []);
-      } catch (error: any) {
-        console.error('Error fetching campaign requests:', error);
-      } finally {
-        setRequestsLoading(false);
-      }
-    };
-    
-    fetchCampaignRequests();
-  }, []);
-  
-  // Fetch campaigns
-  const fetchCampaigns = async () => {
-    try {
-      setCampaignsLoading(true);
-      const { data, error } = await supabase
-        .from('campaigns')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      const transformedData = data?.map(item => ({
-        ...item,
-        vehicle_type: '',  // Default empty string for required fields
-        description: item.campaign_details || '',
-        available_count: item.count
-      })) as Campaign[];
-      
-      setCampaigns(transformedData || []);
-    } catch (error: any) {
-      console.error('Error fetching campaigns:', error);
-    } finally {
-      setCampaignsLoading(false);
-    }
-  };
-  
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
+  const { 
+    data: campaigns = [], 
+    isLoading: campaignsLoading,
+    refetch: refetchCampaigns
+  } = useActiveCampaigns();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -95,8 +48,10 @@ const AdminPage = () => {
                   <CampaignRequestsTable
                     campaignRequests={campaignRequests}
                     loading={requestsLoading}
-                    setCampaignRequests={setCampaignRequests}
-                    refreshCampaigns={fetchCampaigns}
+                    refreshData={() => {
+                      refetchRequests();
+                      refetchCampaigns();
+                    }}
                   />
                 </TabsContent>
                 
@@ -105,7 +60,6 @@ const AdminPage = () => {
                   <ActiveCampaignsTable
                     campaigns={campaigns}
                     loading={campaignsLoading}
-                    setCampaigns={setCampaigns}
                   />
                 </TabsContent>
               </Tabs>

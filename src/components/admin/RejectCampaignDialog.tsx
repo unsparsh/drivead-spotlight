@@ -12,17 +12,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface RejectCampaignDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   onSubmit: (formData: { adminNotes: string }) => Promise<void>;
+  isPending: boolean;
 }
 
 export const RejectCampaignDialog = ({ 
   open, 
   setOpen, 
-  onSubmit 
+  onSubmit,
+  isPending
 }: RejectCampaignDialogProps) => {
   const [formData, setFormData] = useState({
     adminNotes: '',
@@ -56,14 +59,19 @@ export const RejectCampaignDialog = ({
             onChange={handleInputChange}
             className="mt-1"
             placeholder="Explain why this campaign is being rejected"
+            disabled={isPending}
           />
         </div>
         
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSubmit} className="bg-red-600 hover:bg-red-700 text-white">
-            Reject Campaign
-          </AlertDialogAction>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <Button 
+            onClick={handleSubmit} 
+            className="bg-red-600 hover:bg-red-700 text-white"
+            disabled={isPending}
+          >
+            {isPending ? 'Rejecting...' : 'Reject Campaign'}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

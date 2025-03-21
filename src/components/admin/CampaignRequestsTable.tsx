@@ -1,11 +1,10 @@
 
 import { useState } from 'react';
 import { CampaignRequest } from '@/types/Campaign';
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
 import { formatDate, getStatusBadge } from '@/utils/adminHelpers';
 import { ReviewCampaignDialog } from './ReviewCampaignDialog';
 import { RejectCampaignDialog } from './RejectCampaignDialog';
+import { useApproveCampaign, useRejectCampaign } from '@/hooks/useAdminCampaigns';
 import {
   Table,
   TableBody,
@@ -21,20 +20,21 @@ import { Clock, CheckCircle, XCircle, AlertTriangle, IndianRupee } from 'lucide-
 interface CampaignRequestsTableProps {
   campaignRequests: CampaignRequest[];
   loading: boolean;
-  setCampaignRequests: React.Dispatch<React.SetStateAction<CampaignRequest[]>>;
-  refreshCampaigns: () => Promise<void>;
+  refreshData: () => void;
 }
 
 export const CampaignRequestsTable = ({
   campaignRequests,
   loading,
-  setCampaignRequests,
-  refreshCampaigns
+  refreshData
 }: CampaignRequestsTableProps) => {
-  const { toast } = useToast();
   const [selectedRequest, setSelectedRequest] = useState<CampaignRequest | null>(null);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+
+  // Use React Query mutations
+  const approveMutation = useApproveCampaign();
+  const rejectMutation = useRejectCampaign();
 
   const handleReviewClick = (request: CampaignRequest) => {
     setSelectedRequest(request);
@@ -49,93 +49,25 @@ export const CampaignRequestsTable = ({
   const handleApprove = async (formData: { name: string; count: number; adminNotes: string }) => {
     if (!selectedRequest) return;
     
-    try {
-      const { error: campaignError } = await supabase
-        .from('campaigns')
-        .insert({
-          name: formData.name,
-          company: selectedRequest.company_name,
-          count: formData.count,
-          daily_rate: selectedRequest.vehicle_type === 'auto' ? 70 : 100,
-          is_verified: true,
-          campaign_details: selectedRequest.banner_details,
-          advertiser_id: selectedRequest.advertiser_id
-        });
-      
-      if (campaignError) throw campaignError;
-      
-      const { error: updateError } = await supabase
-        .from('campaign_requests')
-        .update({
-          status: 'approved',
-          admin_notes: formData.adminNotes
-        })
-        .eq('id', selectedRequest.id);
-      
-      if (updateError) throw updateError;
-      
-      toast({
-        title: "Campaign Approved",
-        description: "The campaign has been approved and is now live.",
-      });
-      
-      setCampaignRequests(prev => 
-        prev.map(req => 
-          req.id === selectedRequest.id 
-            ? { ...req, status: 'approved', admin_notes: formData.adminNotes } 
-            : req
-        )
-      );
-      
-      await refreshCampaigns();
-      
-      setReviewDialogOpen(false);
-    } catch (error: any) {
-      console.error('Error approving campaign:', error);
-      toast({
-        title: "Error",
-        description: "Could not approve campaign. Please try again.",
-        variant: "destructive",
-      });
-    }
+    await approveMutation.mutateAsync({ 
+      formData, 
+      selectedRequest 
+    });
+    
+    setReviewDialogOpen(false);
+    refreshData();
   };
   
   const handleReject = async (formData: { adminNotes: string }) => {
     if (!selectedRequest) return;
     
-    try {
-      const { error } = await supabase
-        .from('campaign_requests')
-        .update({
-          status: 'rejected',
-          admin_notes: formData.adminNotes
-        })
-        .eq('id', selectedRequest.id);
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Campaign Rejected",
-        description: "The campaign request has been rejected.",
-      });
-      
-      setCampaignRequests(prev => 
-        prev.map(req => 
-          req.id === selectedRequest.id 
-            ? { ...req, status: 'rejected', admin_notes: formData.adminNotes } 
-            : req
-        )
-      );
-      
-      setRejectDialogOpen(false);
-    } catch (error: any) {
-      console.error('Error rejecting campaign:', error);
-      toast({
-        title: "Error",
-        description: "Could not reject campaign. Please try again.",
-        variant: "destructive",
-      });
-    }
+    await rejectMutation.mutateAsync({ 
+      formData, 
+      selectedRequest 
+    });
+    
+    setRejectDialogOpen(false);
+    refreshData();
   };
 
   if (loading) {
@@ -225,12 +157,14 @@ export const CampaignRequestsTable = ({
         setOpen={setReviewDialogOpen}
         selectedRequest={selectedRequest}
         onSubmit={handleApprove}
+        isPending={approveMutation.isPending}
       />
 
       <RejectCampaignDialog
         open={rejectDialogOpen}
         setOpen={setRejectDialogOpen}
         onSubmit={handleReject}
+        isPending={rejectMutation.isPending}
       />
     </>
   );

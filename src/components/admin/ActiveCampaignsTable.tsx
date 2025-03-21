@@ -1,7 +1,6 @@
 
 import { Campaign } from '@/types/Campaign';
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
+import { useUpdateCampaignVerification } from '@/hooks/useAdminCampaigns';
 import {
   Table,
   TableBody,
@@ -17,49 +16,20 @@ import { CheckCircle, XCircle, AlertTriangle, Clock, IndianRupee, Edit } from 'l
 interface ActiveCampaignsTableProps {
   campaigns: Campaign[];
   loading: boolean;
-  setCampaigns: React.Dispatch<React.SetStateAction<Campaign[]>>;
 }
 
 export const ActiveCampaignsTable = ({
   campaigns,
-  loading,
-  setCampaigns
+  loading
 }: ActiveCampaignsTableProps) => {
-  const { toast } = useToast();
+  // Use React Query mutation
+  const updateVerificationMutation = useUpdateCampaignVerification();
 
   const handleVerifyChange = async (campaign: Campaign, newStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('campaigns')
-        .update({
-          is_verified: newStatus
-        })
-        .eq('id', campaign.id);
-      
-      if (error) throw error;
-      
-      toast({
-        title: newStatus ? "Campaign Verified" : "Campaign Hidden",
-        description: newStatus 
-          ? "The campaign is now visible to vehicle owners." 
-          : "The campaign is now hidden from vehicle owners.",
-      });
-      
-      setCampaigns(prev => 
-        prev.map(c => 
-          c.id === campaign.id 
-            ? { ...c, is_verified: newStatus } 
-            : c
-        )
-      );
-    } catch (error: any) {
-      console.error('Error updating campaign status:', error);
-      toast({
-        title: "Error",
-        description: "Could not update campaign status. Please try again.",
-        variant: "destructive",
-      });
-    }
+    await updateVerificationMutation.mutateAsync({
+      campaignId: campaign.id,
+      isVerified: newStatus
+    });
   };
 
   if (loading) {
@@ -126,6 +96,7 @@ export const ActiveCampaignsTable = ({
                       variant="outline" 
                       size="sm"
                       className="text-gray-500 border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                      disabled={updateVerificationMutation.isPending}
                     >
                       <XCircle className="w-4 h-4 mr-1" />
                       Hide
@@ -136,6 +107,7 @@ export const ActiveCampaignsTable = ({
                       variant="outline" 
                       size="sm"
                       className="text-green-500 border-green-200 hover:bg-green-50 dark:border-green-900 dark:hover:bg-green-950/20"
+                      disabled={updateVerificationMutation.isPending}
                     >
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Show
