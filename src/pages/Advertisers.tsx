@@ -78,8 +78,8 @@ const Advertisers = () => {
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="space-y-8">
-                  <h2 className="text-3xl font-bold">Create Your Campaign</h2>
-                  <p className="text-xl text-gray-600">
+                  <h2 className="text-3xl font-bold dark:text-white">Create Your Campaign</h2>
+                  <p className="text-xl text-gray-600 dark:text-gray-300">
                     Customize your mobile advertising campaign by selecting your preferred vehicle type and campaign duration.
                   </p>
                   
@@ -185,66 +185,66 @@ const Advertisers = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
-                  className="bg-white rounded-xl shadow-lg p-8 border border-gray-200"
+                  className="campaign-summary-card"
                 >
-                  <h3 className="text-2xl font-bold mb-6">Campaign Summary</h3>
+                  <h3 className="text-2xl font-bold mb-6 dark:text-white">Campaign Summary</h3>
                   
                   <div className="space-y-6">
-                    <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                    <div className="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
                       <div className="flex items-center">
                         {vehicleType === 'auto' ? (
-                          <Truck className="w-8 h-8 text-driveAd-purple mr-3" />
+                          <Truck className="w-8 h-8 text-driveAd-purple dark:text-driveAd-purple-light mr-3" />
                         ) : (
-                          <Car className="w-8 h-8 text-driveAd-purple mr-3" />
+                          <Car className="w-8 h-8 text-driveAd-purple dark:text-driveAd-purple-light mr-3" />
                         )}
                         <div>
-                          <p className="font-medium text-lg">
+                          <p className="font-medium text-lg dark:text-white">
                             {vehicleType === 'auto' ? 'Auto Rickshaw' : 'Car/Cab'} Advertising
                           </p>
-                          <p className="text-gray-500">
+                          <p className="text-gray-500 dark:text-gray-400">
                             {vehicleType === 'auto' ? 'Urban local reach' : 'City-wide premium coverage'}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-lg">₹{vehicleType === 'auto' ? vehiclePrices.auto : vehiclePrices.car}</p>
-                        <p className="text-gray-500">per day</p>
+                        <p className="font-medium text-lg dark:text-white">₹{vehicleType === 'auto' ? vehiclePrices.auto : vehiclePrices.car}</p>
+                        <p className="text-gray-500 dark:text-gray-400">per day</p>
                       </div>
                     </div>
                     
-                    <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                    <div className="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
                       <div className="flex items-center">
-                        <CalendarDays className="w-8 h-8 text-driveAd-purple mr-3" />
+                        <CalendarDays className="w-8 h-8 text-driveAd-purple dark:text-driveAd-purple-light mr-3" />
                         <div>
-                          <p className="font-medium text-lg">Campaign Duration</p>
-                          <p className="text-gray-500">{days} days</p>
+                          <p className="font-medium text-lg dark:text-white">Campaign Duration</p>
+                          <p className="text-gray-500 dark:text-gray-400">{days} days</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-lg">×{days}</p>
+                        <p className="font-medium text-lg dark:text-white">×{days}</p>
                       </div>
                     </div>
                     
                     <div className="pt-4">
                       <div className="flex justify-between items-center mb-2">
-                        <p className="text-gray-600">Subtotal</p>
-                        <p className="font-medium">₹{totalCost}</p>
+                        <p className="text-gray-600 dark:text-gray-400">Subtotal</p>
+                        <p className="font-medium dark:text-white">₹{totalCost}</p>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <p className="text-gray-600">GST (18%)</p>
-                        <p className="font-medium">₹{Math.round(totalCost * 0.18)}</p>
+                        <p className="text-gray-600 dark:text-gray-400">GST (18%)</p>
+                        <p className="font-medium dark:text-white">₹{Math.round(totalCost * 0.18)}</p>
                       </div>
-                      <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-4">
-                        <p className="text-xl font-bold">Total</p>
-                        <p className="text-2xl font-bold text-driveAd-purple flex items-center">
+                      <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                        <p className="text-xl font-bold dark:text-white">Total</p>
+                        <p className="text-2xl font-bold text-driveAd-purple dark:text-driveAd-purple-light flex items-center">
                           <IndianRupee className="w-5 h-5 mr-1" />
                           {totalCost + Math.round(totalCost * 0.18)}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         * Final pricing may vary based on specific banner requirements and campaign details. Our team will contact you with a personalized quote.
                       </p>
                     </div>
@@ -256,39 +256,39 @@ const Advertisers = () => {
         </section>
         
         {/* FAQ Section */}
-        <section className="py-20 bg-gray-50">
+        <section className="faq-section">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-              <p className="text-xl text-gray-600">Find answers to common questions about advertising with DriveAd.</p>
+              <h2 className="text-3xl font-bold mb-4 dark:text-white">Frequently Asked Questions</h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300">Find answers to common questions about advertising with DriveAd.</p>
             </div>
             
             <div className="max-w-4xl mx-auto">
               <div className="space-y-6">
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">How do you ensure my ads are being displayed?</h3>
-                  <p className="text-gray-600">
+                <div className="faq-card">
+                  <h3 className="text-xl font-semibold mb-3 dark:text-white">How do you ensure my ads are being displayed?</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
                     We use a photo verification system that requires drivers to take daily pictures of vehicles with your ad displayed. These photos are timestamped and geotagged for authenticity.
                   </p>
                 </div>
                 
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">How many vehicles will display my advertisement?</h3>
-                  <p className="text-gray-600">
+                <div className="faq-card">
+                  <h3 className="text-xl font-semibold mb-3 dark:text-white">How many vehicles will display my advertisement?</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
                     The number of vehicles depends on your budget and campaign requirements. We can scale from as few as 5 vehicles to hundreds across multiple cities.
                   </p>
                 </div>
                 
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">Can I choose specific areas for my ads to be displayed?</h3>
-                  <p className="text-gray-600">
+                <div className="faq-card">
+                  <h3 className="text-xl font-semibold mb-3 dark:text-white">Can I choose specific areas for my ads to be displayed?</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
                     Yes, we offer geo-targeting options that allow you to focus your campaign on specific neighborhoods, business districts, or routes based on your target audience.
                   </p>
                 </div>
                 
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-semibold mb-3">What's the process for creating and installing the banners?</h3>
-                  <p className="text-gray-600">
+                <div className="faq-card">
+                  <h3 className="text-xl font-semibold mb-3 dark:text-white">What's the process for creating and installing the banners?</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
                     We handle the entire process from design to installation. You provide the design assets and requirements, and our team takes care of producing weather-resistant, high-quality banners and installing them on the selected vehicles.
                   </p>
                 </div>

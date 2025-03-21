@@ -24,7 +24,7 @@ const BannerCard = ({
     <div 
       className={`cursor-pointer rounded-lg shadow-md p-6 transition-all ${
         isSelected 
-          ? 'border-driveAd-purple bg-driveAd-purple/5 dark:bg-driveAd-purple/20 dark:border-driveAd-purple-light' 
+          ? 'border-driveAd-purple bg-driveAd-purple/5 dark:bg-driveAd-purple/20 dark:border-driveAd-purple-light border' 
           : 'banner-card'
       }`}
       onClick={() => onSelect(id)}

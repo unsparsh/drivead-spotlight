@@ -116,7 +116,7 @@
   box-shadow: 0 10px 25px rgba(155, 135, 245, 0.3);
 }
 
-/* New banner card styles */
+/* Banner card styles */
 .banner-card {
   background: linear-gradient(145deg, #fdfdfd, #f0f0f0);
   border-left: 4px solid #9b87f5;
@@ -203,7 +203,7 @@
 
 /* FAQ Cards */
 .faq-card {
-  @apply bg-white border border-gray-200 rounded-lg shadow-sm p-6 dark:bg-gray-800 dark:border-gray-700;
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6;
 }
 
 /* Common cards across different pages */
@@ -223,4 +223,19 @@
 /* For advertisers page */
 .benefit-card {
   @apply bg-white dark:bg-gray-800 border-l-4 border-driveAd-purple dark:border-driveAd-purple-light p-6 rounded-lg shadow-sm dark:shadow-gray-900/30;
+}
+
+/* Campaign summary card in advertisers page */
+.campaign-summary-card {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-8;
+}
+
+/* FAQ section cards */
+.faq-section {
+  @apply py-20 bg-gray-50 dark:bg-gray-900;
+}
+
+/* How it works section */
+.how-it-works-card {
+  @apply mt-8 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg;
 }
