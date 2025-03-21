@@ -9,31 +9,85 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      campaign_requests: {
+        Row: {
+          admin_notes: string | null
+          advertiser_id: string | null
+          banner_details: string | null
+          company_name: string
+          created_at: string
+          duration: number
+          email: string
+          id: string
+          phone: string
+          status: string
+          total_amount: number
+          vehicle_type: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          advertiser_id?: string | null
+          banner_details?: string | null
+          company_name: string
+          created_at?: string
+          duration: number
+          email: string
+          id?: string
+          phone: string
+          status?: string
+          total_amount: number
+          vehicle_type: string
+        }
+        Update: {
+          admin_notes?: string | null
+          advertiser_id?: string | null
+          banner_details?: string | null
+          company_name?: string
+          created_at?: string
+          duration?: number
+          email?: string
+          id?: string
+          phone?: string
+          status?: string
+          total_amount?: number
+          vehicle_type?: string
+        }
+        Relationships: []
+      }
       campaigns: {
         Row: {
+          advertiser_id: string | null
+          campaign_details: string | null
           company: string
           count: number
           created_at: string
           daily_rate: number
           id: string
+          is_verified: boolean | null
           name: string
           updated_at: string
         }
         Insert: {
+          advertiser_id?: string | null
+          campaign_details?: string | null
           company: string
           count?: number
           created_at?: string
           daily_rate: number
           id?: string
+          is_verified?: boolean | null
           name: string
           updated_at?: string
         }
         Update: {
+          advertiser_id?: string | null
+          campaign_details?: string | null
           company?: string
           count?: number
           created_at?: string
           daily_rate?: number
           id?: string
+          is_verified?: boolean | null
           name?: string
           updated_at?: string
         }
@@ -45,6 +99,7 @@ export type Database = {
           created_at: string | null
           full_name: string | null
           id: string
+          is_admin: boolean | null
           is_advertiser: boolean | null
           is_vehicle_owner: boolean | null
           phone: string | null
@@ -56,6 +111,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id: string
+          is_admin?: boolean | null
           is_advertiser?: boolean | null
           is_vehicle_owner?: boolean | null
           phone?: string | null
@@ -67,6 +123,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string
+          is_admin?: boolean | null
           is_advertiser?: boolean | null
           is_vehicle_owner?: boolean | null
           phone?: string | null

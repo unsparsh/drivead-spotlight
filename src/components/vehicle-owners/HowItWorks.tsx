@@ -1,7 +1,7 @@
 
 const HowItWorks = () => {
   return (
-    <div className="how-it-works-card">
+    <div className="how-it-works-card dark:bg-gray-800 dark:border-gray-700">
       <h4 className="font-semibold mb-2 dark:text-white">How it works:</h4>
       <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
         <li className="flex items-start">

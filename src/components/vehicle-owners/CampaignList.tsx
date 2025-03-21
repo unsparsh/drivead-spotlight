@@ -8,6 +8,7 @@ interface Campaign {
   company: string;
   count: number;
   daily_rate: number;
+  is_verified?: boolean;
 }
 
 interface CampaignListProps {
@@ -34,10 +35,10 @@ const CampaignList = ({
 
   if (availableBanners.length === 0) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
-        <Clock className="w-16 h-16 text-driveAd-purple mx-auto mb-4" />
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
+        <Clock className="w-16 h-16 text-driveAd-purple dark:text-driveAd-purple-light mx-auto mb-4" />
         
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6 max-w-xs mx-auto overflow-hidden">
+        <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 mb-6 max-w-xs mx-auto overflow-hidden">
           <img 
             src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=500&q=80" 
             alt="Person holding lightbulb" 
@@ -45,8 +46,8 @@ const CampaignList = ({
           />
         </div>
         
-        <h3 className="text-lg font-medium mb-2">No Available Banners now, wait for a while...</h3>
-        <p className="text-gray-500">
+        <h3 className="text-lg font-medium mb-2 dark:text-white">No Available Banners now, wait for a while...</h3>
+        <p className="text-gray-500 dark:text-gray-400">
           We're currently updating our banner inventory. Please check back soon for new advertising opportunities.
         </p>
       </div>

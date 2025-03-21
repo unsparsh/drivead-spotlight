@@ -25,7 +25,7 @@ const BannerCard = ({
       className={`cursor-pointer rounded-lg shadow-md p-6 transition-all ${
         isSelected 
           ? 'border-driveAd-purple bg-driveAd-purple/5 dark:bg-driveAd-purple/20 dark:border-driveAd-purple-light border' 
-          : 'banner-card'
+          : 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
       }`}
       onClick={() => onSelect(id)}
     >

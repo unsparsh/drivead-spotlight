@@ -10,9 +10,12 @@ import { Slider } from "@/components/ui/slider";
 import { Car, Truck, IndianRupee, CalendarDays } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Advertisers = () => {
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
   const [vehicleType, setVehicleType] = useState('car');
   const [days, setDays] = useState(7);
   const [formData, setFormData] = useState({
@@ -21,38 +24,77 @@ const Advertisers = () => {
     phone: '',
     bannerDetails: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const vehiclePrices = {
     auto: 70,
     car: 100
   };
   
-  const totalCost = vehicleType === 'auto' ? 
-    vehiclePrices.auto * days : 
-    vehiclePrices.car * days;
+  const dailyRate = vehicleType === 'auto' ? vehiclePrices.auto : vehiclePrices.car;
+  const totalCost = dailyRate * days;
+  const gstAmount = Math.round(totalCost * 0.18);
+  const finalAmount = totalCost + gstAmount;
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    toast({
-      title: "Campaign Request Submitted!",
-      description: "We'll contact you shortly to finalize your advertising campaign.",
-    });
-    
-    // Reset form
-    setFormData({
-      companyName: '',
-      email: '',
-      phone: '',
-      bannerDetails: ''
-    });
-    setDays(7);
-    setVehicleType('car');
+    try {
+      if (!isAuthenticated) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to submit a campaign request.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Save campaign request to database
+      const { error } = await supabase
+        .from('campaign_requests')
+        .insert({
+          advertiser_id: user?.id,
+          company_name: formData.companyName,
+          email: formData.email,
+          phone: formData.phone,
+          vehicle_type: vehicleType,
+          duration: days,
+          banner_details: formData.bannerDetails,
+          total_amount: finalAmount
+        });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Campaign Request Submitted!",
+        description: "Your request has been sent for review. We'll contact you once it's approved.",
+      });
+      
+      // Reset form
+      setFormData({
+        companyName: '',
+        email: '',
+        phone: '',
+        bannerDetails: ''
+      });
+      setDays(7);
+      setVehicleType('car');
+    } catch (error: any) {
+      toast({
+        title: "Submission Error",
+        description: error.message || "There was a problem submitting your request.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -149,7 +191,7 @@ const Advertisers = () => {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <Label>Campaign Duration: {days} days</Label>
-                        <span className="text-gray-500 flex items-center">
+                        <span className="text-gray-500 dark:text-gray-400 flex items-center">
                           <CalendarDays className="w-4 h-4 mr-1" />
                           {days} days
                         </span>
@@ -175,9 +217,20 @@ const Advertisers = () => {
                       />
                     </div>
                     
-                    <Button type="submit" size="lg" className="w-full bg-driveAd-purple hover:bg-driveAd-purple-dark text-white">
-                      Submit Campaign Request
+                    <Button 
+                      type="submit" 
+                      size="lg" 
+                      className="w-full bg-driveAd-purple hover:bg-driveAd-purple-dark text-white"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Campaign Request'}
                     </Button>
+                    
+                    {!isAuthenticated && (
+                      <p className="text-sm text-amber-600 dark:text-amber-400 text-center">
+                        You'll need to sign in to submit a campaign request.
+                      </p>
+                    )}
                   </form>
                 </div>
                 
@@ -185,7 +238,7 @@ const Advertisers = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
-                  className="campaign-summary-card"
+                  className="campaign-summary-card dark:bg-gray-800 dark:border-gray-700"
                 >
                   <h3 className="text-2xl font-bold mb-6 dark:text-white">Campaign Summary</h3>
                   
@@ -207,7 +260,7 @@ const Advertisers = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-lg dark:text-white">₹{vehicleType === 'auto' ? vehiclePrices.auto : vehiclePrices.car}</p>
+                        <p className="font-medium text-lg dark:text-white">₹{dailyRate}</p>
                         <p className="text-gray-500 dark:text-gray-400">per day</p>
                       </div>
                     </div>
@@ -232,20 +285,20 @@ const Advertisers = () => {
                       </div>
                       <div className="flex justify-between items-center mb-2">
                         <p className="text-gray-600 dark:text-gray-400">GST (18%)</p>
-                        <p className="font-medium dark:text-white">₹{Math.round(totalCost * 0.18)}</p>
+                        <p className="font-medium dark:text-white">₹{gstAmount}</p>
                       </div>
                       <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                         <p className="text-xl font-bold dark:text-white">Total</p>
                         <p className="text-2xl font-bold text-driveAd-purple dark:text-driveAd-purple-light flex items-center">
                           <IndianRupee className="w-5 h-5 mr-1" />
-                          {totalCost + Math.round(totalCost * 0.18)}
+                          {finalAmount}
                         </p>
                       </div>
                     </div>
                     
                     <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        * Final pricing may vary based on specific banner requirements and campaign details. Our team will contact you with a personalized quote.
+                        * Your request will be reviewed by our team. Approved campaigns will be added to our active banners list.
                       </p>
                     </div>
                   </div>
@@ -265,28 +318,28 @@ const Advertisers = () => {
             
             <div className="max-w-4xl mx-auto">
               <div className="space-y-6">
-                <div className="faq-card">
+                <div className="faq-card dark:bg-gray-800 dark:border-gray-700">
                   <h3 className="text-xl font-semibold mb-3 dark:text-white">How do you ensure my ads are being displayed?</h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     We use a photo verification system that requires drivers to take daily pictures of vehicles with your ad displayed. These photos are timestamped and geotagged for authenticity.
                   </p>
                 </div>
                 
-                <div className="faq-card">
+                <div className="faq-card dark:bg-gray-800 dark:border-gray-700">
                   <h3 className="text-xl font-semibold mb-3 dark:text-white">How many vehicles will display my advertisement?</h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     The number of vehicles depends on your budget and campaign requirements. We can scale from as few as 5 vehicles to hundreds across multiple cities.
                   </p>
                 </div>
                 
-                <div className="faq-card">
+                <div className="faq-card dark:bg-gray-800 dark:border-gray-700">
                   <h3 className="text-xl font-semibold mb-3 dark:text-white">Can I choose specific areas for my ads to be displayed?</h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     Yes, we offer geo-targeting options that allow you to focus your campaign on specific neighborhoods, business districts, or routes based on your target audience.
                   </p>
                 </div>
                 
-                <div className="faq-card">
+                <div className="faq-card dark:bg-gray-800 dark:border-gray-700">
                   <h3 className="text-xl font-semibold mb-3 dark:text-white">What's the process for creating and installing the banners?</h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     We handle the entire process from design to installation. You provide the design assets and requirements, and our team takes care of producing weather-resistant, high-quality banners and installing them on the selected vehicles.

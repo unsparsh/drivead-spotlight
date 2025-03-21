@@ -20,6 +20,7 @@ interface Campaign {
   company: string;
   count: number;
   daily_rate: number;
+  is_verified: boolean;
 }
 
 const VehicleOwners = () => {
@@ -29,13 +30,15 @@ const VehicleOwners = () => {
   const [availableBanners, setAvailableBanners] = useState<Campaign[]>([]);
   const [showCaptureSection, setShowCaptureSection] = useState(false);
   
-  // Fetch campaigns from Supabase
+  // Fetch verified campaigns from Supabase
   const { data: campaigns, isLoading, error } = useQuery({
-    queryKey: ['campaigns'],
+    queryKey: ['verified-campaigns'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('campaigns')
-        .select('*');
+        .select('*')
+        .eq('is_verified', true)
+        .gt('count', 0);
       
       if (error) {
         throw new Error(error.message);
@@ -77,7 +80,7 @@ const VehicleOwners = () => {
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!selectedBanner) {
@@ -89,21 +92,37 @@ const VehicleOwners = () => {
       return;
     }
     
-    // Update campaign count locally (in a real app, this should update the database)
-    setAvailableBanners(prev => 
-      prev.map(banner => 
-        banner.id === selectedBanner 
-          ? { ...banner, count: banner.count - 1 } 
-          : banner
-      ).filter(banner => banner.count > 0)
-    );
-    
-    toast({
-      title: "Banner Selected Successfully!",
-      description: "You can now upload verification photos to earn daily payments.",
-    });
-    
-    setShowCaptureSection(true);
+    try {
+      // Update campaign count in database
+      const { error } = await supabase
+        .from('campaigns')
+        .update({ count: availableBanners.find(b => b.id === selectedBanner)!.count - 1 })
+        .eq('id', selectedBanner);
+      
+      if (error) throw error;
+      
+      // Update UI
+      setAvailableBanners(prev => 
+        prev.map(banner => 
+          banner.id === selectedBanner 
+            ? { ...banner, count: banner.count - 1 } 
+            : banner
+        )
+      );
+      
+      toast({
+        title: "Banner Selected Successfully!",
+        description: "You can now upload verification photos to earn daily payments.",
+      });
+      
+      setShowCaptureSection(true);
+    } catch (error: any) {
+      toast({
+        title: "Error selecting banner",
+        description: error.message || "There was a problem selecting this banner.",
+        variant: "destructive",
+      });
+    }
   };
   
   // Error handling for campaigns loading
@@ -128,8 +147,8 @@ const VehicleOwners = () => {
               {!showCaptureSection ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                   <div className="space-y-8">
-                    <h2 className="text-3xl font-bold">Select Available Banner</h2>
-                    <p className="text-xl text-gray-600">
+                    <h2 className="text-3xl font-bold dark:text-white">Select Available Banner</h2>
+                    <p className="text-xl text-gray-600 dark:text-gray-300">
                       Choose an advertisement banner based on your vehicle type. Limited banners available on first-come basis.
                     </p>
                     
@@ -142,7 +161,7 @@ const VehicleOwners = () => {
                   
                   <div className="space-y-8">
                     <div className="sticky top-8">
-                      <h3 className="text-xl font-semibold mb-6">Available Banners</h3>
+                      <h3 className="text-xl font-semibold mb-6 dark:text-white">Available Banners</h3>
                       
                       <CampaignList 
                         isLoading={isLoading}
