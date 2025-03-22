@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 // This file is kept for backward compatibility but the functions have been removed
