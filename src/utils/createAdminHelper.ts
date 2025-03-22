@@ -1,7 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-// For the end-user: Run this function in the browser console to create an admin user
+// For development: Run this function in the browser console or a secure environment
+// to create an admin user - NOT FOR PRODUCTION USE without proper security measures
 export const createAdmin = async (email: string, password: string, fullName: string) => {
   try {
     // 1. Attempt to create a new user
@@ -38,7 +39,7 @@ export const createAdmin = async (email: string, password: string, fullName: str
   }
 };
 
-// If you want to make an existing user an admin
+// For development: Make an existing user an admin - NOT FOR PRODUCTION USE without proper security
 export const makeUserAdmin = async (userId: string) => {
   try {
     const { error } = await supabase

@@ -36,7 +36,28 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 
       if (error) throw error
       
-      // Navigate will happen automatically via auth state change listener
+      // Check if user is an admin
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', data.user?.id)
+        .single();
+        
+      if (profileError) {
+        console.error("Error checking admin status:", profileError);
+        // Continue with normal login if we can't check admin status
+      } else if (profileData?.is_admin) {
+        // Redirect to admin dashboard if user is admin
+        toast({
+          title: "Admin Login Successful",
+          description: "You've been redirected to the admin dashboard.",
+        });
+        navigate('/admin');
+        return;
+      }
+      
+      // For non-admin users, navigate normally (handled by auth state change listener)
+      
     } catch (error: any) {
       setError(error.message || "Failed to sign in")
       toast({

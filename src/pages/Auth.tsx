@@ -11,7 +11,6 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { LoginForm } from '@/components/auth/login-form';
 import { SignUpForm } from '@/components/auth/signup-form';
-import { AdminLoginForm } from '@/components/auth/admin-login-form';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -35,10 +34,7 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
-          // Don't redirect here - admin login will handle its own redirect
-          if (location.pathname !== '/auth') {
-            navigate('/');
-          }
+          navigate('/');
         }
       }
     );
@@ -122,10 +118,9 @@ const Auth = () => {
             )}
             
             <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                <TabsTrigger value="admin">Admin</TabsTrigger>
               </TabsList>
               
               <TabsContent value="signin">
@@ -137,12 +132,6 @@ const Auth = () => {
               <TabsContent value="signup">
                 <CardContent className="pt-4">
                   <SignUpForm />
-                </CardContent>
-              </TabsContent>
-              
-              <TabsContent value="admin">
-                <CardContent className="pt-4">
-                  <AdminLoginForm />
                 </CardContent>
               </TabsContent>
             </Tabs>
