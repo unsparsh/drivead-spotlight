@@ -8,7 +8,7 @@ interface Campaign {
   company: string;
   count: number;
   daily_rate: number;
-  is_verified?: boolean;
+  is_verified: boolean;
 }
 
 interface CampaignListProps {
@@ -64,6 +64,7 @@ const CampaignList = ({
           company={banner.company}
           count={banner.count}
           dailyRate={banner.daily_rate}
+          isVerified={banner.is_verified}
           isSelected={selectedBanner === banner.id}
           onSelect={onBannerSelect}
         />

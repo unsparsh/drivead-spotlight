@@ -1,5 +1,5 @@
 
-import { CheckCircle, IndianRupee } from 'lucide-react';
+import { CheckCircle, IndianRupee, ShieldCheck } from 'lucide-react';
 
 interface BannerCardProps {
   id: string;
@@ -7,6 +7,7 @@ interface BannerCardProps {
   company: string;
   count: number;
   dailyRate: number;
+  isVerified?: boolean;
   isSelected: boolean;
   onSelect: (bannerId: string) => void;
 }
@@ -17,6 +18,7 @@ const BannerCard = ({
   company,
   count,
   dailyRate,
+  isVerified = false,
   isSelected,
   onSelect
 }: BannerCardProps) => {
@@ -31,7 +33,14 @@ const BannerCard = ({
     >
       <div className="flex justify-between items-start">
         <div>
-          <h4 className="font-semibold text-lg dark:text-white">{name}</h4>
+          <div className="flex items-center space-x-2">
+            <h4 className="font-semibold text-lg dark:text-white">{name}</h4>
+            {isVerified && (
+              <span className="inline-flex items-center text-green-600 dark:text-green-400">
+                <ShieldCheck className="w-4 h-4" />
+              </span>
+            )}
+          </div>
           <p className="text-gray-500 dark:text-gray-400 mb-3">{company}</p>
           <div className="flex items-center text-sm text-driveAd-purple dark:text-driveAd-purple-light">
             <IndianRupee className="w-4 h-4 mr-1" />

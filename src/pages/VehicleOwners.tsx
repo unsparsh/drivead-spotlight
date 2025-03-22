@@ -31,7 +31,7 @@ const VehicleOwners = () => {
   const [showCaptureSection, setShowCaptureSection] = useState(false);
   
   // Fetch verified campaigns from Supabase
-  const { data: campaigns, isLoading, error } = useQuery({
+  const { data: campaigns, isLoading, error, refetch } = useQuery({
     queryKey: ['verified-campaigns'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -124,6 +124,11 @@ const VehicleOwners = () => {
       });
     }
   };
+  
+  // Force refetch when component mounts
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
   
   // Error handling for campaigns loading
   if (error) {

@@ -15,7 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Clock, CheckCircle, XCircle, AlertTriangle, IndianRupee } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, AlertTriangle, IndianRupee, Zap } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface CampaignRequestsTableProps {
   campaignRequests: CampaignRequest[];
@@ -31,6 +32,7 @@ export const CampaignRequestsTable = ({
   const [selectedRequest, setSelectedRequest] = useState<CampaignRequest | null>(null);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   // Use React Query mutations
   const approveMutation = useApproveCampaign();
@@ -68,6 +70,35 @@ export const CampaignRequestsTable = ({
     
     setRejectDialogOpen(false);
     refreshData();
+  };
+
+  // Quick approve function
+  const handleQuickApprove = async (request: CampaignRequest) => {
+    const defaultFormData = {
+      name: `${request.company_name} Campaign`,
+      count: 5,
+      adminNotes: 'Quick approved by admin'
+    };
+    
+    try {
+      await approveMutation.mutateAsync({
+        formData: defaultFormData,
+        selectedRequest: request
+      });
+      
+      toast({
+        title: "Campaign Quick-Approved",
+        description: "The campaign has been approved with default settings.",
+      });
+      
+      refreshData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Could not approve campaign",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -122,6 +153,15 @@ export const CampaignRequestsTable = ({
                 <TableCell className="text-right">
                   {request.status === 'pending' ? (
                     <div className="flex justify-end gap-2">
+                      <Button 
+                        onClick={() => handleQuickApprove(request)}
+                        variant="outline" 
+                        size="sm"
+                        className="text-amber-500 border-amber-200 hover:bg-amber-50 dark:border-amber-900 dark:hover:bg-amber-950/20"
+                      >
+                        <Zap className="w-4 h-4 mr-1" />
+                        Quick Approve
+                      </Button>
                       <Button 
                         onClick={() => handleReviewClick(request)}
                         variant="outline" 
