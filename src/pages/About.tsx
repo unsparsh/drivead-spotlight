@@ -158,12 +158,12 @@ const AboutPage = () => {
         </section>
         
         {/* Our Story Section */}
-        <section className="py-16 md:py-24 bg-white">
+        <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
           <div className="container px-4 mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
-                <div className="space-y-4 text-gray-700">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">Our Story</h2>
+                <div className="space-y-4 text-gray-700 dark:text-gray-300">
                   <p>
                     DriveAd was founded in 2018 with a simple yet powerful idea: what if everyday 
                     vehicles could become mobile billboards, creating a new income stream for drivers 
@@ -202,11 +202,11 @@ const AboutPage = () => {
         </section>
         
         {/* Our Mission & Values */}
-        <section className="py-16 md:py-24 bg-gray-50">
+        <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
           <div className="container px-4 mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Mission & Values</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Mission & Values</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                 We're driven by the goal of creating mutually beneficial opportunities 
                 for drivers and advertisers, while revolutionizing the outdoor advertising industry.
               </p>
@@ -220,12 +220,12 @@ const AboutPage = () => {
               </TabsList>
               
               <TabsContent value="mission" className="px-4">
-                <Card className="border-none shadow-lg">
+                <Card className="border-none shadow-lg dark:border-gray-700 dark:bg-gray-800">
                   <CardContent className="p-6 md:p-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                       <div>
-                        <h3 className="text-2xl font-bold mb-4 text-driveAd-purple">Connecting Mobility & Advertising</h3>
-                        <p className="text-gray-600 mb-6">
+                        <h3 className="text-2xl font-bold mb-4 text-driveAd-purple dark:text-driveAd-purple-light">Connecting Mobility & Advertising</h3>
+                        <p className="text-gray-600 dark:text-gray-300 mb-6">
                           Our mission is to transform the way outdoor advertising works by leveraging 
                           the power of everyday vehicle movements. We aim to create supplemental income 
                           for vehicle owners while providing advertisers with dynamic, targetable, and 
@@ -234,15 +234,15 @@ const AboutPage = () => {
                         <div className="space-y-4">
                           <div className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-driveAd-purple-light mt-1 mr-3 flex-shrink-0" />
-                            <p className="text-gray-700">Empowering vehicle owners to monetize their existing driving habits</p>
+                            <p className="text-gray-700 dark:text-gray-300">Empowering vehicle owners to monetize their existing driving habits</p>
                           </div>
                           <div className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-driveAd-purple-light mt-1 mr-3 flex-shrink-0" />
-                            <p className="text-gray-700">Revolutionizing outdoor advertising with real-time data and analytics</p>
+                            <p className="text-gray-700 dark:text-gray-300">Revolutionizing outdoor advertising with real-time data and analytics</p>
                           </div>
                           <div className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-driveAd-purple-light mt-1 mr-3 flex-shrink-0" />
-                            <p className="text-gray-700">Creating a sustainable advertising model that maximizes existing resources</p>
+                            <p className="text-gray-700 dark:text-gray-300">Creating a sustainable advertising model that maximizes existing resources</p>
                           </div>
                         </div>
                       </div>
@@ -251,7 +251,7 @@ const AboutPage = () => {
                         <div className="absolute inset-4 bg-driveAd-purple/20 rounded-full animate-pulse [animation-delay:300ms]"></div>
                         <div className="absolute inset-8 bg-driveAd-purple/30 rounded-full animate-pulse [animation-delay:600ms]"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <Target className="h-20 w-20 text-driveAd-purple" />
+                          <Target className="h-20 w-20 text-driveAd-purple dark:text-driveAd-purple-light" />
                         </div>
                       </div>
                     </div>
@@ -262,13 +262,13 @@ const AboutPage = () => {
               <TabsContent value="values">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {values.map((value, index) => (
-                    <Card key={index} className="card-hover">
+                    <Card key={index} className="card-hover dark:bg-gray-800 dark:border-gray-700">
                       <CardContent className="p-6 flex flex-col items-center text-center">
                         <div className="w-16 h-16 rounded-full bg-driveAd-purple-light/20 flex items-center justify-center mb-4">
-                          <value.icon className="h-8 w-8 text-driveAd-purple" />
+                          <value.icon className="h-8 w-8 text-driveAd-purple dark:text-driveAd-purple-light" />
                         </div>
-                        <h3 className="text-xl font-bold mb-2">{value.title}</h3>
-                        <p className="text-gray-600">{value.description}</p>
+                        <h3 className="text-xl font-bold mb-2 dark:text-white">{value.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-300">{value.description}</p>
                       </CardContent>
                     </Card>
                   ))}
@@ -276,10 +276,10 @@ const AboutPage = () => {
               </TabsContent>
               
               <TabsContent value="milestones">
-                <Card>
+                <Card className="dark:bg-gray-800 dark:border-gray-700">
                   <CardContent className="p-6">
                     <div className="relative">
-                      <div className="absolute left-9 top-0 bottom-0 w-px bg-gray-200"></div>
+                      <div className="absolute left-9 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700"></div>
                       <div className="space-y-8">
                         {milestones.map((milestone, index) => (
                           <div key={index} className="flex items-start">
@@ -289,8 +289,8 @@ const AboutPage = () => {
                               </div>
                             </div>
                             <div className="ml-6">
-                              <div className="font-bold text-gray-900">{milestone.year}</div>
-                              <div className="text-gray-600 mt-1">{milestone.event}</div>
+                              <div className="font-bold text-gray-900 dark:text-white">{milestone.year}</div>
+                              <div className="text-gray-600 dark:text-gray-300 mt-1">{milestone.event}</div>
                             </div>
                           </div>
                         ))}
@@ -304,11 +304,11 @@ const AboutPage = () => {
         </section>
         
         {/* Our Team */}
-        <section className="py-16 md:py-24 bg-white">
+        <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
           <div className="container px-4 mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Team</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Team</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                 Meet the passionate individuals behind DriveAd who are driving innovation in the advertising industry.
               </p>
             </div>
@@ -317,18 +317,18 @@ const AboutPage = () => {
               {teamMembers.map((member, index) => (
                 <HoverCard key={index}>
                   <HoverCardTrigger asChild>
-                    <div className="relative overflow-hidden rounded-lg bg-white shadow-md transition-all hover:shadow-lg cursor-pointer">
+                    <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-md transition-all hover:shadow-lg cursor-pointer">
                       <div className="pt-6 px-6 pb-4 text-center">
                         <Avatar className="h-24 w-24 mx-auto mb-4">
                           <AvatarImage src={member.avatar} alt={member.name} />
                           <AvatarFallback>{member.fallback}</AvatarFallback>
                         </Avatar>
-                        <h3 className="text-lg font-bold text-gray-900">{member.name}</h3>
-                        <p className="text-sm text-driveAd-purple">{member.role}</p>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{member.name}</h3>
+                        <p className="text-sm text-driveAd-purple dark:text-driveAd-purple-light">{member.role}</p>
                       </div>
                     </div>
                   </HoverCardTrigger>
-                  <HoverCardContent className="w-80 p-0">
+                  <HoverCardContent className="w-80 p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6">
                       <div className="flex items-center gap-4 mb-4">
                         <Avatar>
@@ -336,11 +336,11 @@ const AboutPage = () => {
                           <AvatarFallback>{member.fallback}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <h4 className="text-base font-semibold">{member.name}</h4>
-                          <p className="text-sm text-gray-500">{member.role}</p>
+                          <h4 className="text-base font-semibold dark:text-white">{member.name}</h4>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{member.role}</p>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600">{member.bio}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{member.bio}</p>
                     </div>
                   </HoverCardContent>
                 </HoverCard>
@@ -350,11 +350,11 @@ const AboutPage = () => {
         </section>
         
         {/* FAQ */}
-        <section className="py-16 md:py-24 bg-gray-50">
+        <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
           <div className="container px-4 mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                 Everything you need to know about DriveAd and how our platform works.
               </p>
             </div>
@@ -362,9 +362,9 @@ const AboutPage = () => {
             <div className="max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
                 {faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`item-${index}`}>
-                    <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
-                    <AccordionContent>
+                  <AccordionItem key={index} value={`item-${index}`} className="dark:border-gray-700">
+                    <AccordionTrigger className="text-left dark:text-white">{faq.question}</AccordionTrigger>
+                    <AccordionContent className="dark:text-gray-300">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -375,7 +375,7 @@ const AboutPage = () => {
         </section>
         
         {/* Contact Us CTA */}
-        <section className="py-16 md:py-20 gradient-bg">
+        <section className="py-16 md:py-20 bg-gradient-to-r from-driveAd-purple to-driveAd-purple-light">
           <div className="container px-4 mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Want to Learn More?</h2>
             <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8">
