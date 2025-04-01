@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 import { LoginForm } from '@/components/auth/login-form';
 import { SignUpForm } from '@/components/auth/signup-form';
 import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
+import { Button } from '@/components/ui/button';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -19,7 +20,8 @@ const Auth = () => {
   const { toast } = useToast();
   
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | 'reset-password'>('signin');
+  const [newPassword, setNewPassword] = useState("");
   
   // Check if user is already logged in
   useEffect(() => {
@@ -101,6 +103,7 @@ const Auth = () => {
     const type = searchParams.get("type");
     
     if (type === "recovery") {
+      setMode('reset-password');
       // Show toast with instructions
       toast({
         title: "Reset Password",
@@ -108,6 +111,39 @@ const Auth = () => {
       });
     }
   }, [location.search, toast]);
+
+  // Handle password reset submission
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newPassword || newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success!",
+        description: "Your password has been updated. Please sign in with your new password.",
+      });
+      
+      setMode('signin');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update password",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -121,11 +157,13 @@ const Auth = () => {
                 {mode === 'signin' && 'Welcome Back'}
                 {mode === 'signup' && 'Create an Account'}
                 {mode === 'forgot-password' && 'Reset Your Password'}
+                {mode === 'reset-password' && 'Set New Password'}
               </CardTitle>
               <CardDescription className="text-center">
                 {mode === 'signin' && 'Sign in to your account to continue'}
                 {mode === 'signup' && 'Enter your details to create an account'}
                 {mode === 'forgot-password' && 'Enter your email to receive a reset link'}
+                {mode === 'reset-password' && 'Enter your new password to complete the reset process'}
               </CardDescription>
             </CardHeader>
             
@@ -137,7 +175,45 @@ const Auth = () => {
               </Alert>
             )}
             
-            {mode !== 'forgot-password' ? (
+            {mode === 'reset-password' ? (
+              <CardContent className="pt-4">
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="grid gap-2">
+                    <label htmlFor="new-password" className="text-sm font-medium">
+                      New Password
+                    </label>
+                    <input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="••••••••"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <Button 
+                    type="submit"
+                    className="w-full bg-driveAd-purple hover:bg-driveAd-purple-dark text-white"
+                  >
+                    Update Password
+                  </Button>
+                </form>
+              </CardContent>
+            ) : mode === 'forgot-password' ? (
+              <CardContent className="pt-4">
+                <div className="mb-4">
+                  <button 
+                    onClick={() => setMode('signin')}
+                    className="text-sm font-medium text-driveAd-purple hover:underline flex items-center"
+                  >
+                    ← Back to Sign In
+                  </button>
+                </div>
+                <ForgotPasswordForm />
+              </CardContent>
+            ) : (
               <Tabs defaultValue={mode} value={mode} onValueChange={(value) => setMode(value as 'signin' | 'signup')} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -158,18 +234,6 @@ const Auth = () => {
                   </CardContent>
                 </TabsContent>
               </Tabs>
-            ) : (
-              <CardContent className="pt-4">
-                <div className="mb-4">
-                  <button 
-                    onClick={() => setMode('signin')}
-                    className="text-sm font-medium text-driveAd-purple hover:underline flex items-center"
-                  >
-                    ← Back to Sign In
-                  </button>
-                </div>
-                <ForgotPasswordForm />
-              </CardContent>
             )}
             
             <CardFooter className="flex flex-col text-center text-sm text-gray-600 dark:text-gray-400 mt-2">
