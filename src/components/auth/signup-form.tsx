@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -26,6 +25,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [signupSuccess, setSignupSuccess] = useState(false)
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
@@ -35,6 +35,8 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     try {
       // Get the current app URL for redirects
       const appUrl = window.location.origin
+      console.log("Signup attempt for:", email)
+      console.log("Redirect URL:", `${appUrl}/auth/callback`)
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -48,10 +50,13 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         }
       })
       
+      console.log("Signup response:", data, error)
+      
       if (error) throw error
 
       // If signup is successful, update the profile with additional information
       if (data.user) {
+        console.log("User created, updating profile:", data.user.id)
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
@@ -67,6 +72,14 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         if (profileError) {
           console.error("Error updating profile:", profileError)
         }
+        
+        // Check if email confirmation is required
+        if (data.session) {
+          console.log("Session created - email confirmation not required")
+        } else {
+          console.log("No session - email confirmation required")
+          setSignupSuccess(true)
+        }
       }
       
       toast({
@@ -74,6 +87,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         description: "Please check your email to confirm your account",
       })
     } catch (error: any) {
+      console.error("Signup error:", error)
       setError(error.message || "Failed to create account")
       toast({
         title: "Sign up failed",
@@ -126,140 +140,154 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
           {error}
         </div>
       )}
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              placeholder="johndoe"
-              type="text"
-              autoCapitalize="none"
-              autoComplete="username"
-              autoCorrect="off"
-              disabled={isLoading}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="fullName">Full Name</Label>
-            <Input
-              id="fullName"
-              placeholder="John Doe"
-              type="text"
-              autoCapitalize="words"
-              autoComplete="name"
-              autoCorrect="off"
-              disabled={isLoading}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
+      
+      {signupSuccess ? (
+        <div className="bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 p-4 rounded-md">
+          <h3 className="font-medium">Account created successfully!</h3>
+          <p className="text-sm mt-1">
+            Please check your email at <strong>{email}</strong> for a confirmation link.
+          </p>
+          <p className="text-sm mt-2">
+            If you don't see the email, please check your spam folder.
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={onSubmit}>
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
+                id="username"
+                placeholder="johndoe"
+                type="text"
                 autoCapitalize="none"
-                autoComplete="new-password"
+                autoComplete="username"
+                autoCorrect="off"
                 disabled={isLoading}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
-              <button 
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Password must be at least 6 characters long
-            </p>
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              placeholder="+1234567890"
-              type="tel"
-              disabled={isLoading}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                placeholder="John Doe"
+                type="text"
+                autoCapitalize="words"
+                autoComplete="name"
+                autoCorrect="off"
+                disabled={isLoading}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="space-y-3 pt-2">
-            <Label>Account Type</Label>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="is_advertiser" 
-                  checked={isAdvertiser}
-                  onCheckedChange={(checked) => setIsAdvertiser(checked === true)}
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="name@example.com"
+                type="email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
+                disabled={isLoading}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoCapitalize="none"
+                  autoComplete="new-password"
+                  disabled={isLoading}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
-                <Label 
-                  htmlFor="is_advertiser" 
-                  className="text-sm font-normal cursor-pointer"
+                <button 
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
                 >
-                  I am an Advertiser
-                </Label>
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="is_vehicle_owner" 
-                  checked={isVehicleOwner}
-                  onCheckedChange={(checked) => setIsVehicleOwner(checked === true)}
-                />
-                <Label 
-                  htmlFor="is_vehicle_owner" 
-                  className="text-sm font-normal cursor-pointer"
-                >
-                  I am a Vehicle Owner
-                </Label>
+              <p className="text-sm text-muted-foreground">
+                Password must be at least 6 characters long
+              </p>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                placeholder="+1234567890"
+                type="tel"
+                disabled={isLoading}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <Label>Account Type</Label>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="is_advertiser" 
+                    checked={isAdvertiser}
+                    onCheckedChange={(checked) => setIsAdvertiser(checked === true)}
+                  />
+                  <Label 
+                    htmlFor="is_advertiser" 
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    I am an Advertiser
+                  </Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="is_vehicle_owner" 
+                    checked={isVehicleOwner}
+                    onCheckedChange={(checked) => setIsVehicleOwner(checked === true)}
+                  />
+                  <Label 
+                    htmlFor="is_vehicle_owner" 
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    I am a Vehicle Owner
+                  </Label>
+                </div>
               </div>
             </div>
-          </div>
 
-          <Button className="bg-driveAd-purple hover:bg-driveAd-purple-dark text-white" disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Create Account
-          </Button>
-        </div>
-      </form>
+            <Button className="bg-driveAd-purple hover:bg-driveAd-purple-dark text-white" disabled={isLoading}>
+              {isLoading && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Create Account
+            </Button>
+          </div>
+        </form>
+      )}
+      
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-300 dark:border-gray-600" />
