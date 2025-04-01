@@ -11,6 +11,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { LoginForm } from '@/components/auth/login-form';
 import { SignUpForm } from '@/components/auth/signup-form';
+import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const Auth = () => {
   const { toast } = useToast();
   
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password'>('signin');
   
   // Check if user is already logged in
   useEffect(() => {
@@ -92,6 +94,20 @@ const Auth = () => {
     processErrorParams();
     processSuccessParams();
   }, [location, toast]);
+
+  // Check for reset password flow
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const type = searchParams.get("type");
+    
+    if (type === "recovery") {
+      // Show toast with instructions
+      toast({
+        title: "Reset Password",
+        description: "Enter your new password to complete the reset process.",
+      });
+    }
+  }, [location.search, toast]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -102,10 +118,14 @@ const Auth = () => {
           <Card className="w-full border-driveAd-purple/20 dark:border-driveAd-purple/30 dark:bg-gray-800/90">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold text-center">
-                Welcome to DriveAd
+                {mode === 'signin' && 'Welcome Back'}
+                {mode === 'signup' && 'Create an Account'}
+                {mode === 'forgot-password' && 'Reset Your Password'}
               </CardTitle>
               <CardDescription className="text-center">
-                Sign in or create an account to continue
+                {mode === 'signin' && 'Sign in to your account to continue'}
+                {mode === 'signup' && 'Enter your details to create an account'}
+                {mode === 'forgot-password' && 'Enter your email to receive a reset link'}
               </CardDescription>
             </CardHeader>
             
@@ -117,24 +137,40 @@ const Auth = () => {
               </Alert>
             )}
             
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="signin">
-                <CardContent className="pt-4">
-                  <LoginForm />
-                </CardContent>
-              </TabsContent>
-              
-              <TabsContent value="signup">
-                <CardContent className="pt-4">
-                  <SignUpForm />
-                </CardContent>
-              </TabsContent>
-            </Tabs>
+            {mode !== 'forgot-password' ? (
+              <Tabs defaultValue={mode} value={mode} onValueChange={(value) => setMode(value as 'signin' | 'signup')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="signin">Sign In</TabsTrigger>
+                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="signin">
+                  <CardContent className="pt-4">
+                    <LoginForm 
+                      onForgotPasswordClick={() => setMode('forgot-password')} 
+                    />
+                  </CardContent>
+                </TabsContent>
+                
+                <TabsContent value="signup">
+                  <CardContent className="pt-4">
+                    <SignUpForm />
+                  </CardContent>
+                </TabsContent>
+              </Tabs>
+            ) : (
+              <CardContent className="pt-4">
+                <div className="mb-4">
+                  <button 
+                    onClick={() => setMode('signin')}
+                    className="text-sm font-medium text-driveAd-purple hover:underline flex items-center"
+                  >
+                    ← Back to Sign In
+                  </button>
+                </div>
+                <ForgotPasswordForm />
+              </CardContent>
+            )}
             
             <CardFooter className="flex flex-col text-center text-sm text-gray-600 dark:text-gray-400 mt-2">
               <p>

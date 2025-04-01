@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -10,9 +11,11 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { Eye, EyeOff } from "lucide-react"
 
-interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  onForgotPasswordClick?: () => void;
+}
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginFormProps) {
   const { toast } = useToast()
   const navigate = useNavigate()
   
@@ -129,12 +132,13 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <a
-                href="/forgot-password"
+              <button
+                type="button"
+                onClick={onForgotPasswordClick}
                 className="text-sm font-medium text-driveAd-purple hover:underline"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
             <div className="relative">
               <Input
