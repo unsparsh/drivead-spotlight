@@ -9,6 +9,7 @@ import { Icons } from "@/components/icons"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { Eye, EyeOff } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface SignUpFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -17,6 +18,11 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("")
+  const [fullName, setFullName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [isAdvertiser, setIsAdvertiser] = useState(false)
+  const [isVehicleOwner, setIsVehicleOwner] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,10 +41,33 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         password,
         options: {
           emailRedirectTo: `${appUrl}/auth/callback`,
+          data: {
+            full_name: fullName,
+            username,
+          }
         }
       })
       
       if (error) throw error
+
+      // If signup is successful, update the profile with additional information
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            username,
+            full_name: fullName,
+            phone,
+            is_advertiser: isAdvertiser,
+            is_vehicle_owner: isVehicleOwner,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', data.user.id)
+
+        if (profileError) {
+          console.error("Error updating profile:", profileError)
+        }
+      }
       
       toast({
         title: "Account created!",
@@ -100,6 +129,38 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       <form onSubmit={onSubmit}>
         <div className="grid gap-4">
           <div className="grid gap-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              placeholder="johndoe"
+              type="text"
+              autoCapitalize="none"
+              autoComplete="username"
+              autoCorrect="off"
+              disabled={isLoading}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="fullName">Full Name</Label>
+            <Input
+              id="fullName"
+              placeholder="John Doe"
+              type="text"
+              autoCapitalize="words"
+              autoComplete="name"
+              autoCorrect="off"
+              disabled={isLoading}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -111,8 +172,10 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               disabled={isLoading}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
+          
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
@@ -124,6 +187,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                 disabled={isLoading}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
               <button 
                 type="button"
@@ -142,6 +206,52 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               Password must be at least 6 characters long
             </p>
           </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              placeholder="+1234567890"
+              type="tel"
+              disabled={isLoading}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Label>Account Type</Label>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="is_advertiser" 
+                  checked={isAdvertiser}
+                  onCheckedChange={(checked) => setIsAdvertiser(checked === true)}
+                />
+                <Label 
+                  htmlFor="is_advertiser" 
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  I am an Advertiser
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="is_vehicle_owner" 
+                  checked={isVehicleOwner}
+                  onCheckedChange={(checked) => setIsVehicleOwner(checked === true)}
+                />
+                <Label 
+                  htmlFor="is_vehicle_owner" 
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  I am a Vehicle Owner
+                </Label>
+              </div>
+            </div>
+          </div>
+
           <Button className="bg-driveAd-purple hover:bg-driveAd-purple-dark text-white" disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
