@@ -24,20 +24,28 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
     try {
       // Get the current app URL for redirects
       const appUrl = window.location.origin
-      const redirectUrl = `${appUrl}/auth`
+      const redirectUrl = `${appUrl}/auth?type=recovery` // Include the recovery type parameter
+
+      console.log("Sending password reset to:", email)
+      console.log("Redirect URL:", redirectUrl)
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       })
 
-      if (error) throw error
+      if (error) {
+        console.error("Password reset error:", error)
+        throw error
+      }
 
+      console.log("Password reset email sent successfully")
       setIsSubmitted(true)
       toast({
         title: "Reset link sent",
         description: "Check your email for the password reset link",
       })
     } catch (error: any) {
+      console.error("Full error:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to send reset link",

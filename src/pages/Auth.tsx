@@ -102,7 +102,10 @@ const Auth = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const type = searchParams.get("type");
     
+    console.log("Auth page - URL type parameter:", type);
+    
     if (type === "recovery") {
+      console.log("Setting mode to reset-password due to recovery parameter");
       setMode('reset-password');
       // Show toast with instructions
       toast({
@@ -126,10 +129,15 @@ const Auth = () => {
     }
     
     try {
+      console.log("Attempting to update password");
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Password update error:", error);
+        throw error;
+      }
       
+      console.log("Password updated successfully");
       toast({
         title: "Success!",
         description: "Your password has been updated. Please sign in with your new password.",
@@ -137,6 +145,7 @@ const Auth = () => {
       
       setMode('signin');
     } catch (error: any) {
+      console.error("Password reset error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to update password",
