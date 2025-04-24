@@ -9,7 +9,8 @@ import { Icons } from "@/components/icons"
 import { supabase } from "@/integrations/supabase/client"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Mail, Phone } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {
   onForgotPasswordClick?: () => void;
@@ -20,10 +21,12 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
   const navigate = useNavigate()
   
   const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [loginMethod, setLoginMethod] = useState<"email" | "phone">("email")
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
@@ -32,7 +35,7 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        [loginMethod]: loginMethod === "email" ? email : phone,
         password,
       })
 
@@ -47,9 +50,7 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
         
       if (profileError) {
         console.error("Error checking admin status:", profileError);
-        // Continue with normal login if we can't check admin status
       } else if (profileData?.is_admin) {
-        // Redirect to admin dashboard if user is admin
         toast({
           title: "Admin Login Successful",
           description: "You've been redirected to the admin dashboard.",
@@ -57,8 +58,6 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
         navigate('/admin');
         return;
       }
-      
-      // For non-admin users, navigate normally (handled by auth state change listener)
       
     } catch (error: any) {
       setError(error.message || "Failed to sign in")
@@ -113,65 +112,147 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
           {error}
         </div>
       )}
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <button
-                type="button"
-                onClick={onForgotPasswordClick}
-                className="text-sm font-medium text-driveAd-purple hover:underline"
-              >
-                Forgot password?
-              </button>
-            </div>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                autoCapitalize="none"
-                autoComplete="current-password"
-                disabled={isLoading}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button 
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
+      
+      <Tabs defaultValue="email" onValueChange={(value) => setLoginMethod(value as "email" | "phone")}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="email" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Email
+          </TabsTrigger>
+          <TabsTrigger value="phone" className="flex items-center gap-2">
+            <Phone className="h-4 w-4" />
+            Phone
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="email">
+          <form onSubmit={onSubmit}>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="name@example.com"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  disabled={isLoading}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <button
+                    type="button"
+                    onClick={onForgotPasswordClick}
+                    className="text-sm font-medium text-driveAd-purple hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoCapitalize="none"
+                    autoComplete="current-password"
+                    disabled={isLoading}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button 
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              <Button className="bg-driveAd-purple hover:bg-driveAd-purple-dark text-white" disabled={isLoading}>
+                {isLoading && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
-              </button>
+                Sign In with Email
+              </Button>
             </div>
-          </div>
-          <Button className="bg-driveAd-purple hover:bg-driveAd-purple-dark text-white" disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Sign In
-          </Button>
-        </div>
-      </form>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="phone">
+          <form onSubmit={onSubmit}>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  placeholder="+1234567890"
+                  type="tel"
+                  autoCapitalize="none"
+                  autoComplete="tel"
+                  disabled={isLoading}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password-phone">Password</Label>
+                  <button
+                    type="button"
+                    onClick={onForgotPasswordClick}
+                    className="text-sm font-medium text-driveAd-purple hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password-phone"
+                    type={showPassword ? "text" : "password"}
+                    autoCapitalize="none"
+                    autoComplete="current-password"
+                    disabled={isLoading}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button 
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              <Button className="bg-driveAd-purple hover:bg-driveAd-purple-dark text-white" disabled={isLoading}>
+                {isLoading && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Sign In with Phone
+              </Button>
+            </div>
+          </form>
+        </TabsContent>
+      </Tabs>
+
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-300 dark:border-gray-600" />
@@ -182,6 +263,7 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
           </span>
         </div>
       </div>
+      
       <Button
         variant="outline"
         type="button"
