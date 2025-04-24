@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -86,6 +87,11 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         title: "Account created!",
         description: "Please check your email to confirm your account",
       })
+
+      // Set signup success even if there was a profile error
+      // The core account creation succeeded
+      setSignupSuccess(true)
+      
     } catch (error: any) {
       console.error("Signup error:", error)
       setError(error.message || "Failed to create account")
@@ -148,7 +154,10 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             Please check your email at <strong>{email}</strong> for a confirmation link.
           </p>
           <p className="text-sm mt-2">
-            If you don't see the email, please check your spam folder.
+            If you don't see the email within a few minutes, please check your spam folder.
+          </p>
+          <p className="text-sm mt-2">
+            Sometimes email delivery can take a few minutes. If you still don't receive the email, you may need to try again later.
           </p>
         </div>
       ) : (

@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Mail } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -22,6 +22,7 @@ const Auth = () => {
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | 'reset-password'>('signin');
   const [newPassword, setNewPassword] = useState("");
+  const [emailVerificationSuccess, setEmailVerificationSuccess] = useState(false);
   
   // Check if user is already logged in
   useEffect(() => {
@@ -37,6 +38,7 @@ const Auth = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth event:", event);
         if (session) {
           navigate('/');
         }
@@ -84,6 +86,7 @@ const Auth = () => {
       // Check for email confirmation success
       if (searchParams.has("access_token") || searchParams.has("refresh_token")) {
         console.log("Email confirmation successful");
+        setEmailVerificationSuccess(true);
         
         toast({
           title: "Success!",
@@ -160,6 +163,15 @@ const Auth = () => {
       
       <main className="flex-grow flex items-center justify-center py-12">
         <div className="container px-4 max-w-md">
+          {emailVerificationSuccess && (
+            <Alert className="mb-4 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+              <Mail className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <AlertDescription className="text-green-800 dark:text-green-300">
+                Email verification successful! You're now signed in.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Card className="w-full border-driveAd-purple/20 dark:border-driveAd-purple/30 dark:bg-gray-800/90">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold text-center">
