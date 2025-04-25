@@ -34,10 +34,12 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
     setError(null)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        [loginMethod]: loginMethod === "email" ? email : phone,
-        password,
-      })
+      // Create the proper credentials object based on login method
+      const credentials = loginMethod === "email" 
+        ? { email, password } 
+        : { phone, password };
+      
+      const { data, error } = await supabase.auth.signInWithPassword(credentials)
 
       if (error) throw error
       

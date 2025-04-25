@@ -40,17 +40,27 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       console.log("Signup attempt for:", signupMethod === "email" ? email : phone)
       console.log("Redirect URL:", `${appUrl}/auth/callback`)
       
-      const { data, error } = await supabase.auth.signUp({
-        [signupMethod]: signupMethod === "email" ? email : phone,
-        password,
-        options: {
-          emailRedirectTo: `${appUrl}/auth/callback`,
-          data: {
-            full_name: fullName,
-            username,
-          }
+      // Create shared options object
+      const options = {
+        data: {
+          full_name: fullName,
+          username,
         }
-      })
+      };
+      
+      // Add email-specific redirect option
+      if (signupMethod === "email") {
+        Object.assign(options, {
+          emailRedirectTo: `${appUrl}/auth/callback`
+        });
+      }
+      
+      // Create the proper credentials object based on signup method
+      const credentials = signupMethod === "email"
+        ? { email, password, options }
+        : { phone, password, options };
+      
+      const { data, error } = await supabase.auth.signUp(credentials);
       
       if (error) throw error
 

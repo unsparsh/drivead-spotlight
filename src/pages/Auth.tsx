@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Mail } from 'lucide-react';
+import { AlertCircle, Mail, CheckCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -20,9 +20,11 @@ const Auth = () => {
   const { toast } = useToast();
   
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | 'reset-password'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | 'reset-password' | 'verify-otp'>('signin');
   const [newPassword, setNewPassword] = useState("");
   const [emailVerificationSuccess, setEmailVerificationSuccess] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [phoneToVerify, setPhoneToVerify] = useState("");
   
   // Check if user is already logged in
   useEffect(() => {
@@ -42,13 +44,25 @@ const Auth = () => {
         if (session) {
           navigate('/');
         }
+        
+        // Handle phone verification flow
+        if (event === "PHONE_VERIFICATION_REQUIRED") {
+          setMode('verify-otp');
+          if (session?.user?.phone) {
+            setPhoneToVerify(session.user.phone);
+          }
+          toast({
+            title: "Verification Required",
+            description: "Please enter the code sent to your phone number.",
+          });
+        }
       }
     );
     
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, toast]);
   
   // Handle auth callback and errors
   useEffect(() => {
@@ -157,6 +171,46 @@ const Auth = () => {
     }
   };
   
+  // Handle phone verification
+  const handleVerifyPhone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!otp || otp.length < 6) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid verification code",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: phoneToVerify,
+        token: otp,
+        type: 'sms'
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Success!",
+        description: "Your phone has been verified. You are now signed in.",
+      });
+      
+      navigate('/');
+    } catch (error: any) {
+      console.error("OTP verification error:", error);
+      toast({
+        title: "Verification Failed",
+        description: error.message || "Invalid code, please try again",
+        variant: "destructive",
+      });
+    }
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -165,7 +219,7 @@ const Auth = () => {
         <div className="container px-4 max-w-md">
           {emailVerificationSuccess && (
             <Alert className="mb-4 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
-              <Mail className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
               <AlertDescription className="text-green-800 dark:text-green-300">
                 Email verification successful! You're now signed in.
               </AlertDescription>
@@ -179,12 +233,14 @@ const Auth = () => {
                 {mode === 'signup' && 'Create an Account'}
                 {mode === 'forgot-password' && 'Reset Your Password'}
                 {mode === 'reset-password' && 'Set New Password'}
+                {mode === 'verify-otp' && 'Verify Your Phone'}
               </CardTitle>
               <CardDescription className="text-center">
                 {mode === 'signin' && 'Sign in to your account to continue'}
                 {mode === 'signup' && 'Enter your details to create an account'}
                 {mode === 'forgot-password' && 'Enter your email to receive a reset link'}
                 {mode === 'reset-password' && 'Enter your new password to complete the reset process'}
+                {mode === 'verify-otp' && 'Enter the verification code sent to your phone'}
               </CardDescription>
             </CardHeader>
             
@@ -196,7 +252,43 @@ const Auth = () => {
               </Alert>
             )}
             
-            {mode === 'reset-password' ? (
+            {mode === 'verify-otp' ? (
+              <CardContent className="pt-4">
+                <form onSubmit={handleVerifyPhone} className="space-y-4">
+                  <div className="grid gap-2">
+                    <label htmlFor="otp-code" className="text-sm font-medium">
+                      Verification Code
+                    </label>
+                    <input
+                      id="otp-code"
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="Enter 6-digit code"
+                      required
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Enter the verification code sent to {phoneToVerify}
+                    </p>
+                  </div>
+                  <Button 
+                    type="submit"
+                    className="w-full bg-driveAd-purple hover:bg-driveAd-purple-dark text-white"
+                  >
+                    Verify Code
+                  </Button>
+                </form>
+                <div className="mt-4">
+                  <button 
+                    onClick={() => setMode('signin')}
+                    className="text-sm font-medium text-driveAd-purple hover:underline"
+                  >
+                    Back to Sign In
+                  </button>
+                </div>
+              </CardContent>
+            ) : mode === 'reset-password' ? (
               <CardContent className="pt-4">
                 <form onSubmit={handleResetPassword} className="space-y-4">
                   <div className="grid gap-2">
