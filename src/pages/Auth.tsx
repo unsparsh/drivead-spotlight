@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,7 +63,7 @@ const Auth = () => {
     };
   }, [navigate, location.pathname, toast]);
   
-  // Handle auth callback and errors
+  // Process error and success params
   useEffect(() => {
     // Process error messages from redirect parameters
     const processErrorParams = () => {
@@ -132,7 +131,7 @@ const Auth = () => {
     }
   }, [location.search, toast]);
 
-  // Handle password reset submission
+  // Password reset and phone verification handlers
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
