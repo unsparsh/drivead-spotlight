@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,18 +43,6 @@ const Auth = () => {
         console.log("Auth event:", event);
         if (session) {
           navigate('/');
-        }
-        
-        // Handle phone verification flow
-        if (event === "PHONE_VERIFICATION_REQUIRED") {
-          setMode('verify-otp');
-          if (session?.user?.phone) {
-            setPhoneToVerify(session.user.phone);
-          }
-          toast({
-            title: "Verification Required",
-            description: "Please enter the code sent to your phone number.",
-          });
         }
       }
     );
