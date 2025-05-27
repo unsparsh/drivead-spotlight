@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Clock, CheckCircle, XCircle, AlertTriangle, IndianRupee, Zap } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, AlertTriangle, IndianRupee, Zap, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface CampaignRequestsTableProps {
@@ -127,9 +127,9 @@ export const CampaignRequestsTable = ({
           <TableCaption>List of all campaign requests from advertisers</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Company</TableHead>
-              <TableHead>Vehicle Type</TableHead>
-              <TableHead>Duration</TableHead>
+              <TableHead>Company Details</TableHead>
+              <TableHead>Contact Person</TableHead>
+              <TableHead>Campaign Info</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
@@ -139,11 +139,34 @@ export const CampaignRequestsTable = ({
           <TableBody>
             {campaignRequests.map((request) => (
               <TableRow key={request.id}>
-                <TableCell className="font-medium">{request.company_name}</TableCell>
-                <TableCell>{request.vehicle_type === 'auto' ? 'Auto Rickshaw' : 'Car/Cab'}</TableCell>
-                <TableCell>{request.duration} days</TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <p className="font-medium">{request.company_name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {request.company_location || 'Location not specified'}
+                    </p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <p className="font-medium flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      {request.requester_name || 'Not specified'}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {request.requester_role || 'Role not specified'}
+                    </p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <p className="text-sm">{request.vehicle_type === 'auto' ? 'Auto Rickshaw' : 'Car/Cab'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{request.duration} days</p>
+                  </div>
+                </TableCell>
                 <TableCell className="whitespace-nowrap">
-                  <span className="flex items-center">
+                  <span className="flex items-center font-semibold text-green-600">
                     <IndianRupee className="w-3 h-3 mr-1" />
                     {request.total_amount}
                   </span>

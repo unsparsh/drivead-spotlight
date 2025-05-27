@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { CampaignRequest } from '@/types/Campaign';
+import { CampaignRequestDetails } from './CampaignRequestDetails';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ReviewCampaignDialogProps {
   open: boolean;
@@ -62,59 +65,77 @@ export const ReviewCampaignDialog = ({
     onSubmit(formData);
   };
 
+  if (!selectedRequest) return null;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Approve Campaign Request</DialogTitle>
+          <DialogTitle>Review Campaign Request</DialogTitle>
           <DialogDescription>
-            Review and approve this campaign to make it available for vehicle owners.
+            Review the complete campaign details and configure approval settings.
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
-          <div>
-            <Label htmlFor="name">Campaign Name</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="mt-1"
-              disabled={isPending}
-            />
-          </div>
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="details">Campaign Details</TabsTrigger>
+            <TabsTrigger value="approval">Approval Settings</TabsTrigger>
+          </TabsList>
           
-          <div>
-            <Label htmlFor="count">Available Slots</Label>
-            <Input
-              id="count"
-              name="count"
-              type="number"
-              min="1"
-              value={formData.count}
-              onChange={handleCountChange}
-              className="mt-1"
-              disabled={isPending}
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Number of vehicle banners available for this campaign
-            </p>
-          </div>
+          <TabsContent value="details" className="mt-4">
+            <ScrollArea className="h-[400px] pr-4">
+              <CampaignRequestDetails request={selectedRequest} />
+            </ScrollArea>
+          </TabsContent>
           
-          <div>
-            <Label htmlFor="adminNotes">Admin Notes (Optional)</Label>
-            <Textarea
-              id="adminNotes"
-              name="adminNotes"
-              value={formData.adminNotes}
-              onChange={handleInputChange}
-              className="mt-1"
-              placeholder="Add any notes about this campaign approval"
-              disabled={isPending}
-            />
-          </div>
-        </div>
+          <TabsContent value="approval" className="mt-4">
+            <div className="grid gap-4 py-4">
+              <div>
+                <Label htmlFor="name">Campaign Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  disabled={isPending}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="count">Available Slots</Label>
+                <Input
+                  id="count"
+                  name="count"
+                  type="number"
+                  min="1"
+                  value={formData.count}
+                  onChange={handleCountChange}
+                  className="mt-1"
+                  disabled={isPending}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Number of vehicle banners available for this campaign
+                </p>
+              </div>
+              
+              <div>
+                <Label htmlFor="adminNotes">Admin Notes (Optional)</Label>
+                <Textarea
+                  id="adminNotes"
+                  name="adminNotes"
+                  value={formData.adminNotes}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Add any notes about this campaign approval"
+                  disabled={isPending}
+                  rows={4}
+                />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
         
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>

@@ -14,12 +14,15 @@ export type Database = {
           admin_notes: string | null
           advertiser_id: string | null
           banner_details: string | null
+          company_location: string | null
           company_name: string
           created_at: string
           duration: number
           email: string
           id: string
           phone: string
+          requester_name: string | null
+          requester_role: string | null
           status: string
           total_amount: number
           vehicle_type: string
@@ -28,12 +31,15 @@ export type Database = {
           admin_notes?: string | null
           advertiser_id?: string | null
           banner_details?: string | null
+          company_location?: string | null
           company_name: string
           created_at?: string
           duration: number
           email: string
           id?: string
           phone: string
+          requester_name?: string | null
+          requester_role?: string | null
           status?: string
           total_amount: number
           vehicle_type: string
@@ -42,12 +48,15 @@ export type Database = {
           admin_notes?: string | null
           advertiser_id?: string | null
           banner_details?: string | null
+          company_location?: string | null
           company_name?: string
           created_at?: string
           duration?: number
           email?: string
           id?: string
           phone?: string
+          requester_name?: string | null
+          requester_role?: string | null
           status?: string
           total_amount?: number
           vehicle_type?: string

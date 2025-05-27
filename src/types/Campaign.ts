@@ -3,8 +3,11 @@ export interface CampaignRequest {
   id: string;
   advertiser_id: string;
   company_name: string;
+  company_location: string;
   email: string;
   phone: string;
+  requester_name: string;
+  requester_role: string;
   vehicle_type: string;
   duration: number;
   banner_details: string;
