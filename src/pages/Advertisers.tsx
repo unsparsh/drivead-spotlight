@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
-import { Car, Truck, IndianRupee, CalendarDays } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Car, Truck, IndianRupee, CalendarDays, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
@@ -22,9 +22,12 @@ const Advertisers = () => {
     companyName: '',
     email: '',
     phone: '',
-    bannerDetails: ''
+    requesterRole: '',
+    bannerDetails: '',
+    location: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   
   const vehiclePrices = {
     auto: 70,
@@ -35,10 +38,95 @@ const Advertisers = () => {
   const totalCost = dailyRate * days;
   const gstAmount = Math.round(totalCost * 0.18);
   const finalAmount = totalCost + gstAmount;
+
+  // Role options for the dropdown
+  const roleOptions = [
+    { value: 'marketing_manager', label: 'Marketing Manager' },
+    { value: 'ceo', label: 'CEO/Founder' },
+    { value: 'marketing_director', label: 'Marketing Director' },
+    { value: 'business_owner', label: 'Business Owner' },
+    { value: 'advertising_manager', label: 'Advertising Manager' },
+    { value: 'brand_manager', label: 'Brand Manager' },
+    { value: 'other', label: 'Other' }
+  ];
+
+  // Auto-detect location on component mount
+  useEffect(() => {
+    detectLocation();
+  }, []);
+
+  const detectLocation = async () => {
+    setIsDetectingLocation(true);
+    
+    try {
+      // First try browser geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              // Use reverse geocoding to get city name
+              const response = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`
+              );
+              const data = await response.json();
+              const location = `${data.city}, ${data.principalSubdivision}`;
+              
+              setFormData(prev => ({ ...prev, location }));
+              toast({
+                title: "Location Detected",
+                description: `Auto-detected your location: ${location}`,
+              });
+            } catch (error) {
+              console.error('Reverse geocoding failed:', error);
+              fallbackLocationDetection();
+            }
+            setIsDetectingLocation(false);
+          },
+          (error) => {
+            console.error('Geolocation failed:', error);
+            fallbackLocationDetection();
+          },
+          { timeout: 10000 }
+        );
+      } else {
+        fallbackLocationDetection();
+      }
+    } catch (error) {
+      console.error('Location detection failed:', error);
+      setIsDetectingLocation(false);
+    }
+  };
+
+  const fallbackLocationDetection = async () => {
+    try {
+      // Fallback to IP-based location
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      const location = `${data.city}, ${data.region}`;
+      
+      setFormData(prev => ({ ...prev, location }));
+      toast({
+        title: "Location Detected",
+        description: `Detected your location: ${location}`,
+      });
+    } catch (error) {
+      console.error('IP location detection failed:', error);
+      toast({
+        title: "Location Detection Failed",
+        description: "Please enter your location manually",
+        variant: "destructive",
+      });
+    }
+    setIsDetectingLocation(false);
+  };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRoleChange = (value: string) => {
+    setFormData(prev => ({ ...prev, requesterRole: value }));
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,6 +143,16 @@ const Advertisers = () => {
         setIsSubmitting(false);
         return;
       }
+
+      if (!formData.requesterRole) {
+        toast({
+          title: "Role Required",
+          description: "Please select your role in the company.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
       
       // Save campaign request to database
       const { error } = await supabase
@@ -62,8 +160,10 @@ const Advertisers = () => {
         .insert({
           advertiser_id: user?.id,
           company_name: formData.companyName,
+          company_location: formData.location,
           email: formData.email,
           phone: formData.phone,
+          requester_role: formData.requesterRole,
           vehicle_type: vehicleType,
           duration: days,
           banner_details: formData.bannerDetails,
@@ -82,10 +182,15 @@ const Advertisers = () => {
         companyName: '',
         email: '',
         phone: '',
-        bannerDetails: ''
+        requesterRole: '',
+        bannerDetails: '',
+        location: ''
       });
       setDays(7);
       setVehicleType('car');
+      
+      // Re-detect location for next use
+      detectLocation();
     } catch (error: any) {
       toast({
         title: "Submission Error",
@@ -137,6 +242,27 @@ const Advertisers = () => {
                         required
                       />
                     </div>
+
+                    <div className="space-y-3">
+                      <Label htmlFor="location">Company Location</Label>
+                      <div className="relative">
+                        <Input 
+                          id="location" 
+                          name="location" 
+                          placeholder={isDetectingLocation ? "Detecting location..." : "City, State/Province"}
+                          value={formData.location}
+                          onChange={handleInputChange}
+                          disabled={isDetectingLocation}
+                          required
+                        />
+                        {isDetectingLocation && (
+                          <MapPin className="absolute right-3 top-3 h-4 w-4 animate-pulse text-driveAd-purple" />
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        We've auto-detected your location. You can edit it if needed.
+                      </p>
+                    </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-3">
@@ -162,6 +288,22 @@ const Advertisers = () => {
                           required
                         />
                       </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label htmlFor="requesterRole">Your Role in the Company</Label>
+                      <Select value={formData.requesterRole} onValueChange={handleRoleChange} required>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {roleOptions.map((role) => (
+                            <SelectItem key={role.value} value={role.value}>
+                              {role.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     
                     <div className="space-y-3">
@@ -221,7 +363,7 @@ const Advertisers = () => {
                       type="submit" 
                       size="lg" 
                       className="w-full bg-driveAd-purple hover:bg-driveAd-purple-dark text-white"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isDetectingLocation}
                     >
                       {isSubmitting ? 'Submitting...' : 'Submit Campaign Request'}
                     </Button>
