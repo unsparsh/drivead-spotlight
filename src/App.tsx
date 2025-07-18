@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LenisProvider } from "@/components/LenisProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect } from "react";
 import Index from "./pages/Index";
@@ -42,43 +43,45 @@ const ThemeInitializer = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <ThemeInitializer />
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/auth/callback" element={<Auth />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/advertisers" element={<Advertisers />} />
-            <Route path="/vehicle-owners" element={<VehicleOwners />} />
-            <Route path="/advertiser-registration" element={
-              <ProtectedRoute>
-                <AdvertiserRegistration />
-              </ProtectedRoute>
-            } />
-            <Route path="/vehicle-owner-registration" element={
-              <ProtectedRoute>
-                <VehicleOwnerRegistration />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin" element={
-              <ProtectedRoute>
-                <Admin />
-              </ProtectedRoute>
-            } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <LenisProvider>
+        <ThemeInitializer />
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<Auth />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/advertisers" element={<Advertisers />} />
+              <Route path="/vehicle-owners" element={<VehicleOwners />} />
+              <Route path="/advertiser-registration" element={
+                <ProtectedRoute>
+                  <AdvertiserRegistration />
+                </ProtectedRoute>
+              } />
+              <Route path="/vehicle-owner-registration" element={
+                <ProtectedRoute>
+                  <VehicleOwnerRegistration />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <Admin />
+                </ProtectedRoute>
+              } />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </LenisProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

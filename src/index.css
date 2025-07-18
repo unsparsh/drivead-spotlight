@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 255 70% 74%;
+    --primary: 200 100% 50%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -31,7 +31,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 255 70% 74%;
+    --ring: 200 100% 50%;
 
     --radius: 0.5rem;
 
@@ -55,7 +55,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 255 70% 74%;
+    --primary: 195 100% 60%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -72,7 +72,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 255 70% 74%;
+    --ring: 195 100% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -95,11 +95,11 @@
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, #9b87f5 0%, #6E59A5 100%);
+  background: linear-gradient(135deg, hsl(200, 100%, 50%) 0%, hsl(195, 100%, 40%) 100%);
 }
 
 .dark .gradient-bg {
-  background: linear-gradient(135deg, #6E59A5 0%, #4A3A7A 100%);
+  background: linear-gradient(135deg, hsl(195, 100%, 40%) 0%, hsl(190, 100%, 30%) 100%);
 }
 
 .card-hover {
@@ -108,35 +108,35 @@
 
 .card-hover:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(107, 70, 193, 0.2);
+  box-shadow: 0 10px 25px hsla(200, 100%, 50%, 0.2);
 }
 
 /* Dark mode card hover effect */
 .dark .card-hover:hover {
-  box-shadow: 0 10px 25px rgba(155, 135, 245, 0.3);
+  box-shadow: 0 10px 25px hsla(195, 100%, 60%, 0.3);
 }
 
 /* Banner card styles */
 .banner-card {
   background: linear-gradient(145deg, #fdfdfd, #f0f0f0);
-  border-left: 4px solid #9b87f5;
+  border-left: 4px solid hsl(200, 100%, 50%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .banner-card:hover {
   background: linear-gradient(145deg, #ffffff, #f5f5f5);
-  box-shadow: 0 6px 16px rgba(107, 70, 193, 0.15);
+  box-shadow: 0 6px 16px hsla(200, 100%, 50%, 0.15);
 }
 
 .dark .banner-card {
   background: linear-gradient(145deg, #2a2a2a, #222222);
-  border-left: 4px solid #7E69AB;
+  border-left: 4px solid hsl(195, 100%, 60%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .dark .banner-card:hover {
   background: linear-gradient(145deg, #303030, #252525);
-  box-shadow: 0 6px 16px rgba(155, 135, 245, 0.2);
+  box-shadow: 0 6px 16px hsla(195, 100%, 60%, 0.2);
 }
 
 .service-card {
@@ -154,12 +154,12 @@
   left: 0;
   width: 100%;
   height: 6px;
-  background: linear-gradient(90deg, #9b87f5, #6E59A5);
+  background: linear-gradient(90deg, hsl(200, 100%, 50%), hsl(195, 100%, 40%));
 }
 
 .service-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(107, 70, 193, 0.15);
+  box-shadow: 0 10px 25px hsla(200, 100%, 50%, 0.15);
 }
 
 .dark .service-card {
@@ -168,11 +168,11 @@
 }
 
 .dark .service-card::before {
-  background: linear-gradient(90deg, #7E69AB, #6E59A5);
+  background: linear-gradient(90deg, hsl(195, 100%, 60%), hsl(190, 100%, 50%));
 }
 
 .dark .service-card:hover {
-  box-shadow: 0 10px 25px rgba(155, 135, 245, 0.2);
+  box-shadow: 0 10px 25px hsla(195, 100%, 60%, 0.2);
 }
 
 /* How it works card styles */
@@ -183,22 +183,22 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 2rem;
   transition: all 0.3s ease;
-  border-top: 4px solid #9b87f5;
+  border-top: 4px solid hsl(200, 100%, 50%);
 }
 
 .process-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(107, 70, 193, 0.12);
+  box-shadow: 0 12px 24px hsla(200, 100%, 50%, 0.12);
 }
 
 .dark .process-card {
   background: #1a1a1a;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-top: 4px solid #7E69AB;
+  border-top: 4px solid hsl(195, 100%, 60%);
 }
 
 .dark .process-card:hover {
-  box-shadow: 0 12px 24px rgba(155, 135, 245, 0.15);
+  box-shadow: 0 12px 24px hsla(195, 100%, 60%, 0.15);
 }
 
 /* FAQ Cards */
@@ -222,7 +222,7 @@
 
 /* For advertisers page */
 .benefit-card {
-  @apply bg-white dark:bg-gray-800 border-l-4 border-driveAd-purple dark:border-driveAd-purple-light p-6 rounded-lg shadow-sm dark:shadow-gray-900/30;
+  @apply bg-white dark:bg-gray-800 border-l-4 border-driveAd-cyan dark:border-driveAd-cyan-light p-6 rounded-lg shadow-sm dark:shadow-gray-900/30;
 }
 
 /* Campaign summary card in advertisers page */

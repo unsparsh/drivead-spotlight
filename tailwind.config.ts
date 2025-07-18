@@ -64,14 +64,14 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				driveAd: {
-					purple: {
-						light: '#9b87f5',
-						DEFAULT: '#7E69AB', 
-						dark: '#6E59A5'
+					cyan: {
+						light: 'hsl(190, 100%, 85%)',
+						DEFAULT: 'hsl(200, 100%, 50%)', 
+						dark: 'hsl(195, 100%, 40%)'
 					},
-					orange: '#F97316',
-					yellow: '#FEF7CD',
-					green: '#F2FCE2',
+					orange: 'hsl(25, 95%, 53%)',
+					yellow: 'hsl(48, 94%, 68%)',
+					green: 'hsl(142, 76%, 36%)',
 				}
 			},
 			borderRadius: {
