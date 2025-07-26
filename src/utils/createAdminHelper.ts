@@ -1,6 +1,31 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
-// This file is kept for backward compatibility but the functions have been removed
-// Admin privileges should be managed directly in the Supabase database by setting
-// the is_admin flag to true in the profiles table
+export const createTestAdmin = async () => {
+  try {
+    // First create a user in auth
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: 'admin@test.com',
+      password: 'admin123',
+      options: {
+        data: {
+          full_name: 'Test Admin',
+          username: 'admin'
+        }
+      }
+    });
+
+    if (signUpError) {
+      console.error('Error creating admin user:', signUpError);
+      return { error: signUpError };
+    }
+
+    console.log('Admin user created:', signUpData.user?.id);
+    return { data: signUpData };
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return { error };
+  }
+};
+
+// Call this function to create the admin
+// createTestAdmin();

@@ -9,6 +9,7 @@ import { LenisProvider } from "@/components/LenisProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect } from "react";
 import Index from "./pages/Index";
+import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import Advertisers from "./pages/Advertisers";
 import VehicleOwners from "./pages/VehicleOwners";
@@ -51,8 +52,8 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/auth/callback" element={<Auth />} />
               <Route path="/about" element={<About />} />
               <Route path="/advertisers" element={<Advertisers />} />
               <Route path="/vehicle-owners" element={<VehicleOwners />} />
