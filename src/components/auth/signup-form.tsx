@@ -66,9 +66,14 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
 
       if (data.user) {
         console.log("User created, updating profile:", data.user.id)
+        
+        // Wait a moment for the trigger to create the profile
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({
+          .upsert({
+            id: data.user.id,
             username,
             full_name: fullName,
             phone: signupMethod === "phone" ? phone : null,
@@ -76,10 +81,16 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             is_vehicle_owner: isVehicleOwner,
             updated_at: new Date().toISOString()
           })
-          .eq('id', data.user.id)
 
         if (profileError) {
           console.error("Error updating profile:", profileError)
+          toast({
+            title: "Profile update failed",
+            description: "Account created but profile couldn't be updated. Please update your profile later.",
+            variant: "destructive",
+          })
+        } else {
+          console.log("Profile updated successfully")
         }
         
         if (data.session) {

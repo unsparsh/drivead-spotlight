@@ -43,22 +43,26 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
 
       if (error) throw error
       
-      // Check if user is an admin
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', data.user?.id)
-        .single();
-        
-      if (profileError) {
-        console.error("Error checking admin status:", profileError);
-      } else if (profileData?.is_admin) {
+      if (data.user) {
         toast({
-          title: "Admin Login Successful",
-          description: "You've been redirected to the admin dashboard.",
+          title: "Login Successful",
+          description: "Welcome back!",
         });
-        navigate('/admin');
-        return;
+        
+        // Check if user is an admin
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', data.user.id)
+          .single();
+          
+        if (!profileError && profileData?.is_admin) {
+          navigate('/admin');
+          return;
+        }
+        
+        // Regular user login - redirect to home
+        navigate('/');
       }
       
     } catch (error: any) {
