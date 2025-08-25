@@ -2,6 +2,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
+import { cleanupAuthState } from '@/utils/authCleanup';
 
 interface AuthContextProps {
   user: User | null;
@@ -58,7 +59,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
   
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      cleanupAuthState();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch {}
+    } finally {
+      window.location.href = '/auth';
+    }
   };
   
   const value = {

@@ -10,6 +10,13 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // Always exchange any code in the URL for a new session to avoid keeping a previous user's session
+        await supabase.auth.exchangeCodeForSession(window.location.href);
+      } catch {
+        // No code present or already exchanged
+      }
+
+      try {
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -21,9 +28,10 @@ const AuthCallback = () => {
             title: "Login successful!",
             description: "Welcome back!",
           });
-          navigate('/');
+          // Force full reload to guarantee a clean auth state
+          window.location.replace('/');
         } else {
-          navigate('/auth');
+          window.location.replace('/auth');
         }
       } catch (error: any) {
         console.error('Auth callback error:', error);
@@ -32,7 +40,7 @@ const AuthCallback = () => {
           description: error.message || "Something went wrong during authentication",
           variant: "destructive",
         });
-        navigate('/auth');
+        window.location.replace('/auth');
       }
     };
 

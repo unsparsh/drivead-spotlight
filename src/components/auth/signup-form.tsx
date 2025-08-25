@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import { cleanupAuthState } from "@/utils/authCleanup"
 import { Eye, EyeOff, Mail, Phone } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -39,7 +40,11 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       const appUrl = window.location.origin
       console.log("Signup attempt for:", signupMethod === "email" ? email : phone)
       console.log("Redirect URL:", `${appUrl}/auth/callback`)
-      
+      // Ensure clean auth state before starting signup
+      cleanupAuthState();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch {}
       // Create shared options object
       const options = {
         data: {
@@ -47,7 +52,6 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
           username,
         }
       };
-      
       // Add email-specific redirect option
       if (signupMethod === "email") {
         Object.assign(options, {
@@ -128,6 +132,11 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       setIsLoading(true)
       setError(null)
       
+      // Ensure clean auth state before OAuth
+      cleanupAuthState();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch {}
       // Get the current app URL for redirects
       const appUrl = window.location.origin
       const redirectUrl = `${appUrl}/auth/callback`

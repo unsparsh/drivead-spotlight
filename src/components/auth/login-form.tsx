@@ -9,6 +9,7 @@ import { Icons } from "@/components/icons"
 import { supabase } from "@/integrations/supabase/client"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { cleanupAuthState } from "@/utils/authCleanup"
 import { Eye, EyeOff, Mail, Phone } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -34,6 +35,11 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
     setError(null)
 
     try {
+      // Ensure clean auth state before login
+      cleanupAuthState();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch {}
       // Create the proper credentials object based on login method
       const credentials = loginMethod === "email" 
         ? { email, password } 
@@ -82,6 +88,11 @@ export function LoginForm({ className, onForgotPasswordClick, ...props }: LoginF
       setIsLoading(true)
       setError(null)
       
+      // Ensure clean auth state before OAuth
+      cleanupAuthState();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch {}
       // Get the current app URL for redirects
       const appUrl = window.location.origin
       const redirectUrl = `${appUrl}/auth/callback`
